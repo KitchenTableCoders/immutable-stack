@@ -7,7 +7,11 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2173"]
                  [com.datomic/datomic-free "0.9.4699"]
-                 [om "0.5.3"]]
+                 [bidi "1.10.2"]
+                 [om "0.5.3"]
+                 [secretary "1.1.0"]
+                 [ring/ring "1.2.2"]
+                 [fogus/ring-edn "0.2.0"]]
 
   :source-paths ["src/clj"]
 
