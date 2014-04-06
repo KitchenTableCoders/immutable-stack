@@ -4,6 +4,9 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
+  ;:exclusions
+  ;[org.clojure/google-closure-library-third-party]
+
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2173"]
                  [com.datomic/datomic-free "0.9.4699"]
@@ -15,7 +18,7 @@
 
   :source-paths ["src/clj"]
 
-  :plugins [[lein-cljsbuild "1.0.3"]]
+  :plugins [[lein-cljsbuild "1.0.2"]]
 
   :cljsbuild {
     :builds [
@@ -23,7 +26,7 @@
        :source-paths ["src/cljs"]
        :compiler {
          :output-to "resources/public/js/main.js"
-         :output-dir "resoures/public/js/out"
+         :output-dir "resources/public/js/out"
          :optimizations :none
          :source-map true
        }}
