@@ -1,5 +1,8 @@
 (ns contacts.util
-  (:require [datomic.api :as d]))
+  (:require [datomic.api :as d]
+            [clojure.java.io :as io]
+            [clojure.edn :as edn])
+  (:import datomic.Util))
 
 (def uri "datomic:mem://localhost:4334/contacts")
 
@@ -27,3 +30,6 @@
   (create-db)
   (load-schema)
   (load-data))
+
+(def conn (get-conn))
+
