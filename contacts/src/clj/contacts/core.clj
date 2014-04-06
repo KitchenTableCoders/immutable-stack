@@ -15,6 +15,7 @@
 
 (defn handler [req]
   (let [match (bidi/match-route routes (:uri req))]
+    (println req)
     (case (:handler match)
       :index (index req)
       req)))

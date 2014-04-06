@@ -16,4 +16,4 @@
 (comment
   (def s (system {:db-uri   "datomic:mem://localhost:4334/contacts"
             :web-port 8080}))
-  (component/start d))
+  (component/start s))

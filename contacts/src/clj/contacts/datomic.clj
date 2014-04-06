@@ -72,3 +72,4 @@
                     (first (Util/readAll (io/reader (io/resource "data/schema.edn"))))
                     initial-data
                     nil))
+
