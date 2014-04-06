@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: org.slf4j/jcl-over-slf4j:1.7.5">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/jcl-over-slf4j/1.7.5/jcl-over-slf4j-1.7.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

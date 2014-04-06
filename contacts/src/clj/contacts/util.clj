@@ -31,5 +31,5 @@
   (load-schema)
   (load-data))
 
-(def conn (get-conn))
+;(def conn (get-conn))
 
