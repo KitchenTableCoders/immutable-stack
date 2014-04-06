@@ -1,29 +1,12 @@
 (ns contacts.core
-  (:require [contacts.util :as util]
-            [ring.util.response :refer [file-response]]
-            [ring.adapter.jetty :refer [run-jetty]]
-            [ring.middleware.edn :refer [wrap-edn-params]]
-            [ring.middleware.resource :refer [wrap-resource]]
-            [bidi.bidi :refer [make-handler] :as bidi]))
+  (:require [com.stuartsierra.component :as component]
+            [contacts.system :as system]))
 
-(def routes
-  ["/" {"" :index
-        "index.html" :index}])
+(def sys (system/system {:db-uri   "datomic:mem://localhost:4334/contacts"
+                         :web-port 8080}))
 
-(defn index [req]
-  (file-response "public/html/index.html" {:root "resources"}))
+;; just a work around for LT, can't start at top level for some reason
+(defn start []
+  (component/start sys))
 
-(defn handler [req]
-  (let [match (bidi/match-route routes (:uri req))]
-    (println req)
-    (case (:handler match)
-      :index (index req)
-      req)))
-
-(def app
-  (-> handler
-      (wrap-resource "public")
-      wrap-edn-params))
-
-
-
+;; (start)
