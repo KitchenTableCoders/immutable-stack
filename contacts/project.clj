@@ -14,7 +14,8 @@
                  [om "0.5.3"]
                  [secretary "1.1.0"]
                  [ring/ring "1.2.2"]
-                 [fogus/ring-edn "0.2.0"]]
+                 [fogus/ring-edn "0.2.0"]
+                 [com.stuartsierra/component "0.2.1"]]
 
   :source-paths ["src/clj"]
 

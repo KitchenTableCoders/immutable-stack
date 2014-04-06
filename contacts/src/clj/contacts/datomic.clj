@@ -1,5 +1,8 @@
 (ns contacts.datomic
-  (:require [datomic.api :as d]))
+  (:require [datomic.api :as d]
+            [com.stuartsierra.component :as component]
+            [clojure.java.io :as io])
+  (:import datomic.Util))
 
 
 
@@ -15,11 +18,11 @@
           [?eid :person/first-name]]
         db)))
 
-(defn display-contacts [db]
-  (let [contacts (list-contacts db)]
-    (map
-      #(select-keys % [:person/last-name :person/first-name])
-      (sort-by :person/last-name contacts))))
+  (defn display-contacts [db]
+    (let [contacts (list-contacts db)]
+      (map
+        #(select-keys % [:person/last-name :person/first-name])
+        (sort-by :person/last-name contacts))))
 
 
 (defn get-person [db])
@@ -53,4 +56,19 @@
       :address/state "NY"
       :address/zipcode "11234"}]))
 
-;; add/remove person, telephone, address, email
+
+(defrecord DatomicDatabase [uri schema initial-data connection]
+  component/Lifecycle
+  (start [component]
+    (d/create-database uri)
+    (let [c (d/connect uri)]
+      @(d/transact c schema)
+      @(d/transact c initial-data)
+      (assoc component :connection c)))
+  (stop [component]))
+
+(defn new-database [db-uri]
+  (DatomicDatabase. db-uri
+                    (first (Util/readAll (io/reader (io/resource "data/schema.edn"))))
+                    initial-data
+                    nil))

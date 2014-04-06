@@ -24,5 +24,5 @@
       (wrap-resource "public")
       wrap-edn-params))
 
-(defonce server
-  (run-jetty #'app {:port 8080 :join? false}))
+
+
