@@ -9,4 +9,4 @@
 (defn start []
   (component/start sys))
 
-;; (start)
+(start)

@@ -22,46 +22,40 @@
 (defn generate-response [data & [status]]
   {:status (or status 200)
    :headers {"Content-Type" "application/edn"}
-   :body (pr-str data)}
-  )
+   :body (pr-str data)})
 
 (defn contacts [req]
-  (generate-response (contacts.datomic/list-contacts (d/db (:datomic-connection req)))))
+  (generate-response
+   (contacts.datomic/display-contacts
+    (d/db (:datomic-connection req)))))
 
 (defn handler [req]
-
-
   (let [match (bidi/match-route routes (:uri req))]
-    (println "match: " match)
-
     (case (:handler match)
       :index (index req)
-      :contacts (let [ r (contacts req)] (println r) r)
+      :contacts (contacts req)
       req)))
 
 (defn wrap-connection [handler conn]
   (fn [req] (handler (assoc req :datomic-connection conn))))
 
-(defn contacts-handler* [conn]
+(defn contacts-handler [conn]
   (wrap-resource
     (wrap-edn-params (wrap-connection handler conn))
     "public"))
 
-(def contacts-hander [conn]
+(defn contacts-handler-dev [conn]
   (fn [req]
-    ((contact-handler* conn) req)))
-
-;
+    ((contacts-handler conn) req)))
 
 (defrecord WebServer [port handler container datomic-connection]
   component/Lifecycle
   (start [component]
-    (let [ handler1   (handler datomic-connection)
-           container (run-jetty handler1 {:port port :join? false})]
+    ;; NOTE: fix datomic-connection
+    (let [req-handler (handler (:connection datomic-connection))
+          container   (run-jetty req-handler {:port port :join? false})]
       (assoc component :container container)))
   (stop [component]
     (.stop container)))
 
-
-
-(defn web-server [web-port] (WebServer. web-portd contacts-handler* nil nil))
+(defn web-server [web-port] (WebServer. web-port contacts-handler-dev nil nil))
