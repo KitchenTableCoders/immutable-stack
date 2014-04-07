@@ -26,8 +26,9 @@
 
 (defn contacts [req]
   (generate-response
-    (contacts.datomic/display-contacts
-      (d/db (:datomic-connection req)))))
+    (vec
+      (contacts.datomic/display-contacts
+        (d/db (:datomic-connection req))))))
 
 (defn handler [req]
   (let [match (bidi/match-route routes (:uri req))]
