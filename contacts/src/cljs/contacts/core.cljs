@@ -13,9 +13,9 @@
   (reify
     om/IRender
     (render [_]
-      (println contacts)
       (apply dom/ul nil
-        (map #(dom/li nil (str (:person/last-name %) ", " (:person/first-name %)))
+        (map #(dom/li nil
+                (str (:person/last-name %) ", " (:person/first-name %)))
              contacts)))))
 
 (defn app-view [app owner]
