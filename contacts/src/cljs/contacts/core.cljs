@@ -5,13 +5,22 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [contacts.util :as util])
-  (:import goog.History
-           goog.history.EventType))
+  (:import [goog History]
+           [goog.history EventType]))
+
+;; =============================================================================
+;; Setup
 
 (enable-console-print!)
 
+(def history (History.))
+(events/listen history EventType.NAVIGATE #(secretary/dispatch! (.-token %)))
+
 (def app-state
   (atom {:route [:list-contacts]}))
+
+;; =============================================================================
+;; Components
 
 (defn contact-view [contact owner]
   )
@@ -34,14 +43,11 @@
   (reify
     om/IWillMount
     (will-mount [_]
-      #_(defroute "/" []
+      (defroute "/" []
         (om/update! app :route [:list-contacts]))
-      #_(defroute "/:id" [id]
+      (defroute "/:id" {id :id}
         (om/update! app :route [:view-contact id]))
-      #_(let [h (History.)]
-        (events/listen h EventType.NAVIGATE
-          #(secretary/dispatch! (.-token %)))
-        (.setEnabled h true)))
+      (.setEnabled history true))
     om/IRender
     (render [_]
       (let [route (:route app)]
