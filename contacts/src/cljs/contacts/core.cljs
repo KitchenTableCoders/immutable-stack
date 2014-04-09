@@ -13,7 +13,7 @@
   (reify
     om/IRender
     (render [_]
-      (apply dom/ul nil
+      (apply dom/ul #js {:id "contacts-list"}
         (map #(dom/li nil
                 (str (:person/last-name %) ", " (:person/first-name %)))
              contacts)))))
@@ -22,7 +22,12 @@
   (reify
     om/IRender
     (render [_]
-      (om/build contacts-view (:contacts app)))))
+      (dom/div nil
+        (dom/button
+          #js {:id "add-contact"
+               :onClick (fn [e])}
+         "Add contact")
+        (om/build contacts-view (:contacts app))))))
 
 (util/edn-xhr
  {:method :get
