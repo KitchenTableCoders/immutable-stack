@@ -14,7 +14,9 @@
 (enable-console-print!)
 
 (def history (History.))
-(events/listen history EventType.NAVIGATE #(secretary/dispatch! (.-token %)))
+
+(events/listen history EventType.NAVIGATE
+  #(secretary/dispatch! (.-token %)))
 
 (def app-state
   (atom {:route [:list-contacts]}))
@@ -54,7 +56,8 @@
         (dom/div nil
           (case (first (:route app))
             :list-contacts (om/build contacts-view (:contacts app))
-            :view-contact  (om/build contact-view (get-in app [:contacts (second route)]))))))))
+            :view-contact  (om/build contact-view
+                              (get-in app [:contacts (second route)]))))))))
 
 (util/edn-xhr
   {:method :get
