@@ -1,0 +1,13 @@
+body {
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+}
+
+#contacts {
+  position: absolute;
+  width: 600px;
+  left: 50%;
+  margin-left: -300px;
+  border: 1px solid #ccc;
+}
