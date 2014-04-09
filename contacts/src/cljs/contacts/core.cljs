@@ -43,7 +43,8 @@
                :onClick (fn [e])}
           "Add contact")
         (apply dom/ul #js {:id "contacts-list"}
-          (map #(dom/li nil
+          (map #(dom/li
+                  #js {:onClick (fn [e])}
                   (str (:person/last-name %) ", " (:person/first-name %)))
                contacts))))))
 
