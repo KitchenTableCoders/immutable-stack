@@ -25,7 +25,13 @@
 ;; Components
 
 (defn contact-view [contact owner]
-  )
+  (reify
+    om/IRender
+    (render [_]
+      (dom/div nil
+        (dom/h2 nil
+          (str (:person/last-name contact) ", "
+               (:person/first-name contact)))))))
 
 (defn contacts-view [contacts owner]
   (reify
