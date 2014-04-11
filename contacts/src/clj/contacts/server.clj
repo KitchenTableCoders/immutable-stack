@@ -53,10 +53,17 @@
   component/Lifecycle
   (start [component]
     ;; NOTE: fix datomic-connection
-    (let [req-handler (handler (:connection datomic-connection))
-          container   (run-jetty req-handler {:port port :join? false})]
-      (assoc component :container container)))
+    (if container
+      (let [req-handler (handler (:connection datomic-connection))
+           container (run-jetty req-handler {:port port :join? false})]
+       (assoc component :container container))
+      ;; if no container
+      (assoc component :handler (handler (:connection datomic-connection)))))
   (stop [component]
     (.stop container)))
 
-(defn web-server [web-port] (WebServer. web-port contacts-handler-dev nil nil))
+
+
+(defn dev-server [web-port] (WebServer. web-port contacts-handler-dev true nil))
+
+(defn prod-server [] (WebServer. nil contacts-handler false nil))
