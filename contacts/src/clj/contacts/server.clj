@@ -1,6 +1,6 @@
 (ns contacts.server
   (:require [contacts.util :as util]
-            [ring.util.response :refer [file-response]]
+            [ring.util.response :refer [file-response resource-response]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.edn :refer [wrap-edn-params]]
             [ring.middleware.resource :refer [wrap-resource]]
@@ -17,7 +17,7 @@
    ])
 
 (defn index [req]
-  (file-response "public/html/index.html" {:root "resources"}))
+  (resource-response "html/index.html" {:root "public"}))
 
 (defn generate-response [data & [status]]
   {:status (or status 200)
