@@ -19,7 +19,8 @@
   :source-paths ["src/clj"]
 
   :plugins [[lein-cljsbuild "1.0.2"]
-            [lein-ring "0.8.10"]]
+            [lein-ring "0.8.10"]
+            [lein-beanstalk "0.2.7"]]
 
   :ring {:handler contacts.core/service
          :init contacts.core/start

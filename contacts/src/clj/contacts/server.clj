@@ -11,9 +11,9 @@
             ))
 
 (def routes
-  ["/" {"" :index
-        "index.html" :index
-        "contacts" :contacts}
+  ["" {"/" :index
+       "/index.html" :index
+       "/contacts" :contacts}
    ])
 
 (defn index [req]
@@ -32,6 +32,7 @@
 
 (defn handler [req]
   (let [match (bidi/match-route routes (:uri req))]
+    (println match)
     (case (:handler match)
       :index (index req)
       :contacts (contacts req)
