@@ -17,7 +17,8 @@
    ])
 
 (defn index [req]
-  (resource-response "html/index.html" {:root "public"}))
+  (assoc (resource-response "html/index.html" {:root "public"})
+    :headers {"Content-Type" "text/html"}))
 
 (defn generate-response [data & [status]]
   {:status (or status 200)
