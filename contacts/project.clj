@@ -6,9 +6,6 @@
 
   :jvm-opts ^:replace ["-Xms512m" "-Xmx512m" "-server"]
 
-  ;:exclusions
-  ;[org.clojure/google-closure-library-third-party]
-
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojurescript "0.0-2173"]
                  [com.datomic/datomic-free "0.9.4699"]
