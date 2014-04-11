@@ -38,7 +38,7 @@
       {:id "release"
        :source-paths ["src/cljs"]
        :compiler {
-         :output-to "reources/public/js/main.js"
+         :output-to "resources/public/js/main.js"
          :optimizations :advanced
          :output-wrapper true
          :pretty-print false
