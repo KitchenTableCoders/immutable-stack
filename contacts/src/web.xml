@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+
+  <servlet>
+    <description>Immutable Stack Contacts Application</description>
+    <display-name>Contacts</display-name>
+    <servlet-name>Contacts</servlet-name>
+    <servlet-class>contacts.servlet</servlet-class>
+  </servlet>
+  <listener>
+    <listener-class>contacts.servlet_context_listener</listener-class>
+  </listener>
+  <servlet-mapping>
+    <servlet-name>contacts-mapping</servlet>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+</web-app>
