@@ -4,6 +4,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
+  :jvm-opts ^:replace ["-Xms512m" "-Xmx512m" "-server"]
+
   ;:exclusions
   ;[org.clojure/google-closure-library-third-party]
 
