@@ -22,6 +22,10 @@
   :plugins [[lein-cljsbuild "1.0.2"]
             [lein-ring "0.8.10"]]
 
+  :ring {:handler contacts.core/service
+         :init contacts.core/start
+         :destroy contacts.core/stop}
+
   :cljsbuild {
     :builds [
       {:id "dev"

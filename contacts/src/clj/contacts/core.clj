@@ -2,11 +2,29 @@
   (:require [com.stuartsierra.component :as component]
             [contacts.system :as system]))
 
-(def sys (system/system {:db-uri   "datomic:mem://localhost:4334/contacts"
-                         :web-port 8080}))
+(def servlet-system (atom nil))
 
-;; just a work around for LT, can't start at top level for some reason
+;; =============================================================================
+;; Development
+
+(defn dev-start []
+  (let [sys  (system/dev-system
+               {:db-uri   "datomic:mem://localhost:4334/contacts"
+                :web-port 8080})
+        sys' (component/start sys)]
+    (reset! servlet-system sys')
+    sys'))
+
+;; =============================================================================
+;; Production
+
+(defn service [req]
+  ((:handler (:webserver @servlet-system)) req))
+
 (defn start []
-  (component/start sys))
+  (let [s (system/prod-system
+            {:db-uri   "datomic:mem://localhost:4334/contacts"})]
+    (let [started-system (component/start s)]
+      (reset! servlet-system started-system))))
 
-(start)
+(defn stop [])
