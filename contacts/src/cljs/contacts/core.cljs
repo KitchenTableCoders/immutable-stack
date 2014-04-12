@@ -32,11 +32,12 @@
   (reify
     om/IRender
     (render [_]
-      (dom/div nil
+      (dom/div #js {:id "contact-view"}
         (dom/button
-          #js {:onClick (fn [e] (put! current-contact :none))}
+          #js {:onClick (fn [e] (put! current-contact :none))
+               :className "button"}
           "Back")
-        (dom/h2 nil
+        (dom/div #js {:id "contact-info"}
           (str (:person/last-name contact) ", "
                (:person/first-name contact)))))))
 
@@ -45,9 +46,10 @@
   (reify
     om/IRender
     (render [_]
-      (dom/div nil
+      (dom/div #js {:id "contacts-view"}
         (dom/button
           #js {:id "add-contact"
+               :className "button"
                :onClick (fn [e])}
           "Add contact")
         (apply dom/ul #js {:id "contacts-list"}
