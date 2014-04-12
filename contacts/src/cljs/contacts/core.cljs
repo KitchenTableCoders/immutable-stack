@@ -28,10 +28,34 @@
 ;; =============================================================================
 ;; Components
 
+(defn contact-numbers [numbers]
+  (dom/div nil
+    (dom/label nil "Phone Numbers")
+    (apply dom/ul #js {:id "phone-numbers"}
+      (map #(dom/li nil (:telephone/number %))
+           numbers))))
+
+
+(defn contact-address [address]
+  (dom/li nil
+      (dom/div nil (:address/street address))
+      (dom/div nil (str (:address/city address) ", "
+                        (:address/state address)
+                        (:address/zip address)))))
+
+
+(defn contact-addresses [addresses]
+  (dom/div nil
+    (dom/label nil "Addresses")
+    (apply dom/ul #js {:id "addresses"}
+      (map contact-address addresses))))
+
+
 (defn contact-view [contact owner {:keys [current-contact]}]
   (reify
     om/IRender
     (render [_]
+      (println contact)
       (dom/div #js {:id "contact-view"}
         (dom/button
           #js {:onClick (fn [e] (put! current-contact :none))
@@ -39,7 +63,9 @@
           "Back")
         (dom/div #js {:id "contact-info"}
           (str (:person/last-name contact) ", "
-               (:person/first-name contact)))))))
+               (:person/first-name contact))
+          (contact-numbers (:person/telephone contact))
+          (contact-addresses (:person/address contact)))))))
 
 
 (defn contacts-view [contacts owner {:keys [current-contact]}]
