@@ -67,10 +67,24 @@
               {:opts
                {:edit-key :person/first-name
                 :on-edit
-                (fn [m]
-                  (put! sync
-                    {:op :update
-                     :data (select-keys (:value m) [:db/id (:edit-key m)])}))}}))
+                (fn [{:keys [value edit-key]}]
+                  (if (:db/id value)
+                    (put! sync
+                      {:op :update
+                       :data (select-keys value [:db/id edit-key])})
+                    (put! sync
+                       {:op :create :data value})))}})
+            (om/build c/editable contact
+              {:opts
+               {:edit-key :person/last-name
+                :on-edit
+                (fn [{:keys [value edit-key]}]
+                  (if (:db/id value)
+                    (put! sync
+                      {:op :update
+                       :data (select-keys value [:db/id edit-key])})
+                    (put! sync
+                       {:op :create :data value})))}}))
           (contact-numbers (:person/telephone contact))
           (contact-addresses (:person/address contact)))))))
 
@@ -83,7 +97,7 @@
         (dom/button
           #js {:id "add-contact"
                :className "button"
-               :onClick (fn [e])}
+               :onClick (fn [e] (put! current-contact :new))}
           "Add contact")
         (apply dom/ul #js {:id "contacts-list"}
           (map (fn [p]
@@ -107,30 +121,55 @@
       ;; routes
       (defroute "/" []
         (om/update! app :route [:list-contacts]))
+
       (defroute "/:id" {id :id}
         (om/update! app :route [:view-contact id])
-        (when (= (:current-contact (om/value (om/get-props owner))) :none)
+        ;; if page loads on a contact
+        (when (and (= (:current-contact (om/value (om/get-props owner))) :none)
+                   (not= id "new"))
           (put! (om/get-state owner :current-contact) id)))
+
       (.setEnabled history true)
 
       ;; routing loop
       (go (loop []
             (let [id (<! (om/get-state owner :current-contact))]
-              (if (= id :none)
-                (.setToken history "/")
-                (let [contact (<! (util/edn-chan {:url (str "/contacts/" id)}))]
-                  (.setToken history (str "/" id))
-                  (om/update! app :current-contact contact))))
+              (cond
+               (= id :none)
+               (do
+                 (.setToken history "/")
+                 (om/update! app :contacts
+                   (vec (<! (util/edn-chan {:url "/contacts"})))))
+
+               (= id :new)
+               (do
+                 (.setToken history "/new")
+                 (om/update! app :current-contact
+                   {:person/first-name "New Contact"
+                    :person/last-name ""}))
+
+               :else
+               (let [contact (<! (util/edn-chan {:url (str "/contacts/" id)}))]
+                 (.setToken history (str "/" id))
+                 (om/update! app :current-contact contact))))
             (recur)))
 
        ;; sync loop
        (go (loop []
              (let [{:keys [op data]} (<! (om/get-state owner :sync))]
                (condp = op
+                 :create
+                 (let [data (<! (util/edn-chan
+                                 {:method :post :url "/contacts"
+                                  :data data}))]
+                   (.setToken history (str "/" (:db/id data)))
+                   (om/transact! app :current-contact #(merge % data)))
+
                  :update
                  (<! (util/edn-chan
                       {:method :put :url (str "/contacts/" (:db/id data))
                        :data (dissoc data :db/id)})))
+
                (recur)))))
 
     om/IRenderState
