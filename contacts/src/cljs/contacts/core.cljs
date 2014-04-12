@@ -102,7 +102,7 @@
         (om/update! app :route [:list-contacts]))
       (defroute "/:id" {id :id}
         (om/update! app :route [:view-contact id])
-        (when (= (:current-contact app) :none)
+        (when (= (:current-contact (om/value (om/get-props owner))) :none)
           (put! (om/get-state owner :current-contact) id)))
       (.setEnabled history true)
       ;; go loop
