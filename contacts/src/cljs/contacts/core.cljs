@@ -23,16 +23,19 @@
 (def app-state
   (atom {:route [:list-contacts]
          :contacts []
-         :current-contact nil}))
+         :current-contact :none}))
 
 ;; =============================================================================
 ;; Components
 
-(defn contact-view [contact owner]
+(defn contact-view [contact owner {:keys [current-contact]}]
   (reify
     om/IRender
     (render [_]
       (dom/div nil
+        (dom/button
+          #js {:onClick (fn [e] (put! current-contact :none))}
+          "Back")
         (dom/h2 nil
           (str (:person/last-name contact) ", "
                (:person/first-name contact)))))))
@@ -69,7 +72,7 @@
       ;; go loop
       (go (loop []
             (let [id (<! (om/get-state owner :current-contact))]
-              (if (nil? id)
+              (if (= id :none)
                 (.setToken history "/")
                 (let [contact (util/edn-chan {:url (str "/contacts/" id)})]
                   (.setToken history (str "/" id))
