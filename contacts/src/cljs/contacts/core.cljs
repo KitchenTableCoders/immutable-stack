@@ -31,7 +31,7 @@
 (defn contact-numbers [numbers]
   (dom/div #js {:className "section"}
     (dom/label nil "Phone Numbers")
-    (apply dom/ul #js {:id "phone-numbers"}
+    (apply dom/ul #js {:id "phone-numbers" :className "list"}
       (map #(dom/li nil (:telephone/number %))
            numbers))))
 
@@ -47,7 +47,7 @@
 (defn contact-addresses [addresses]
   (dom/div #js {:className "section"}
     (dom/label nil "Addresses")
-    (apply dom/ul #js {:id "addresses"}
+    (apply dom/ul #js {:id "addresses" :className "list"}
       (map contact-address addresses))))
 
 
