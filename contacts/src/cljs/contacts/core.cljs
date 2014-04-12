@@ -77,7 +77,7 @@
             (let [id (<! (om/get-state owner :current-contact))]
               (if (= id :none)
                 (.setToken history "/")
-                (let [contact (util/edn-chan {:url (str "/contacts/" id)})]
+                (let [contact (<! (util/edn-chan {:url (str "/contacts/" id)}))]
                   (.setToken history (str "/" id))
                   (om/update! app :current-contact contact))))
             (recur))))
