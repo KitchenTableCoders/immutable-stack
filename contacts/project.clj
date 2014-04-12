@@ -44,6 +44,8 @@
          :optimizations :advanced
          :output-wrapper true
          :pretty-print false
+         :preamble ["react/react.min.js"]
+         :externs ["react/externs/react.js"]
        }}
     ]
   })
