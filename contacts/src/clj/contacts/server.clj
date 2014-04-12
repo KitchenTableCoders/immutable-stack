@@ -10,6 +10,9 @@
             [contacts.datomic]
             ))
 
+;; =============================================================================
+;; Routing
+
 (def routes
   ["" {"/" :index
        "/index.html" :index
@@ -25,11 +28,13 @@
          :put    {["/" :id] :phone-update}
          :delete {["/" :id] :phone-delete}}}])
 
-
+;; =============================================================================
+;; Handlers
 
 (defn index [req]
   (assoc (resource-response "html/index.html" {:root "public"})
     :headers {"Content-Type" "text/html"}))
+
 
 (defn generate-response [data & [status]]
   {:status (or status 200)
@@ -45,10 +50,12 @@
       (contacts.datomic/display-contacts
         (d/db (:datomic-connection req))))))
 
+
 (defn contact-get [req id]
   (generate-response
     (contacts.datomic/get-contact
       (d/db (:datomic-connection req)) id)))
+
 
 (defn contact-create [req]
   (generate-response
@@ -57,11 +64,13 @@
       ;; must have form {:person/first-name "x" :person/last-name "y}
       (:edn-params req))))
 
+
 (defn contact-update [req id]
   (generate-response
     (contacts.datomic/update-contact
       (:datomic-connection req)
       (assoc (:edn-params req) :db/id id))))
+
 
 (defn contact-delete [req id]
   (generate-response
@@ -91,8 +100,6 @@
       (:datomic-connection req)
       id)))
 
-
-
 ;;;; PRIMARY HANDLER
 
 (defn handler [req]
@@ -115,6 +122,41 @@
 
       req)))
 
+
+(defn wrap-connection [handler conn]
+  (fn [req] (handler (assoc req :datomic-connection conn))))
+
+
+(defn contacts-handler [conn]
+  (wrap-resource
+    (wrap-edn-params (wrap-connection handler conn))
+    "public"))
+
+
+(defn contacts-handler-dev [conn]
+  (fn [req]
+    ((contacts-handler conn) req)))
+
+
+(defrecord WebServer [port handler container datomic-connection]
+  component/Lifecycle
+  (start [component]
+    ;; NOTE: fix datomic-connection
+    (if container
+      (let [req-handler (handler (:connection datomic-connection))
+           container (run-jetty req-handler {:port port :join? false})]
+       (assoc component :container container))
+      ;; if no container
+      (assoc component :handler (handler (:connection datomic-connection)))))
+  (stop [component]
+    (.stop container)))
+
+
+(defn dev-server [web-port] (WebServer. web-port contacts-handler-dev true nil))
+(defn prod-server [] (WebServer. nil contacts-handler false nil))
+
+;; =============================================================================
+;; Route Testing
 
 (comment
 
@@ -162,32 +204,3 @@
 
   )
 
-
-(defn wrap-connection [handler conn]
-  (fn [req] (handler (assoc req :datomic-connection conn))))
-
-(defn contacts-handler [conn]
-  (wrap-resource
-    (wrap-edn-params (wrap-connection handler conn))
-    "public"))
-
-(defn contacts-handler-dev [conn]
-  (fn [req]
-    ((contacts-handler conn) req)))
-
-(defrecord WebServer [port handler container datomic-connection]
-  component/Lifecycle
-  (start [component]
-    ;; NOTE: fix datomic-connection
-    (if container
-      (let [req-handler (handler (:connection datomic-connection))
-           container (run-jetty req-handler {:port port :join? false})]
-       (assoc component :container container))
-      ;; if no container
-      (assoc component :handler (handler (:connection datomic-connection)))))
-  (stop [component]
-    (.stop container)))
-
-(defn dev-server [web-port] (WebServer. web-port contacts-handler-dev true nil))
-
-(defn prod-server [] (WebServer. nil contacts-handler false nil))

@@ -6,7 +6,8 @@
   (:import datomic.Util))
 
 
-
+;; =============================================================================
+;; Helpers
 
 (defn convert-db-id [x]
   (cond
@@ -23,6 +24,8 @@
     :else x))
 
 
+;; =============================================================================
+;; Queries
 
 (defn list-contacts [db]
   (map
@@ -41,7 +44,6 @@
         (sort-by :person/last-name (map convert-db-id contacts)))))
 
 
-
 (defn get-contact [db id-string]
   (convert-db-id (d/touch (d/entity db (edn/read-string id-string)))))
 
@@ -57,11 +59,9 @@
   true)
 
 
-
 (defn delete-contact [conn id]
   @(d/transact conn [[:db.fn/retractEntity (edn/read-string id)]])
   true)
-
 
 
 ;; PHONE
@@ -82,41 +82,9 @@
   true)
 
 
-
 (defn delete-phone [conn id]
   @(d/transact conn [[:db.fn/retractEntity (edn/read-string id)]])
   true)
-
-
-(comment
-  (create-contact (:connection (:db @contacts.core/servlet-system))
-                  {:person/first-name "person" :person/last-name "withphone"})
-
-  (delete-contact (:connection (:db @contacts.core/servlet-system))
-                  "17592186045423")
-
-  (update-contact (:connection (:db @contacts.core/servlet-system))
-                  {:db/id "17592186045429" :person/first-name "Foooo"})
-
-
-  (create-phone (:connection (:db @contacts.core/servlet-system))
-                  {:person/_telephone "17592186045438"
-                   :telephone/number "123-456-7890"})
-
-  (d/touch (d/entity (d/db (:connection (:db @contacts.core/servlet-system)))
-             17592186045438))
-
-  (update-phone (:connection (:db @contacts.core/servlet-system))
-                {:db/id "17592186045440"
-                 :telephone/number "000-456-7890"})
-
-  (delete-phone (:connection (:db @contacts.core/servlet-system))
-                "17592186045440")
-
-  )
-
-
-
 
 (defn create-phone [conn data])
 
@@ -125,13 +93,7 @@
 (defn delete-phone [conn data])
 
 
-
 ;; return datoms to add
-
-
-
-
-
 
 (def initial-data
   (let [person-id (d/tempid :db.part/user)
@@ -170,4 +132,35 @@
                     (first (Util/readAll (io/reader (io/resource "data/schema.edn"))))
                     initial-data
                     nil))
+
+;; =============================================================================
+;; Query testing
+
+(comment
+  (create-contact (:connection (:db @contacts.core/servlet-system))
+                  {:person/first-name "person" :person/last-name "withphone"})
+
+  (delete-contact (:connection (:db @contacts.core/servlet-system))
+                  "17592186045423")
+
+  (update-contact (:connection (:db @contacts.core/servlet-system))
+                  {:db/id "17592186045429" :person/first-name "Foooo"})
+
+
+  (create-phone (:connection (:db @contacts.core/servlet-system))
+                  {:person/_telephone "17592186045438"
+                   :telephone/number "123-456-7890"})
+
+  (d/touch (d/entity (d/db (:connection (:db @contacts.core/servlet-system)))
+             17592186045438))
+
+  (update-phone (:connection (:db @contacts.core/servlet-system))
+                {:db/id "17592186045440"
+                 :telephone/number "000-456-7890"})
+
+  (delete-phone (:connection (:db @contacts.core/servlet-system))
+                "17592186045440")
+
+  )
+
 
