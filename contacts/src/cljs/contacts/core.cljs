@@ -5,7 +5,7 @@
             [secretary.core :as secretary :include-macros true :refer [defroute]]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [cljs.core.async :refer [chan put!]]
+            [cljs.core.async :refer [chan put! >! <!]]
             [contacts.util :as util])
   (:import [goog History]
            [goog.history EventType]))
@@ -71,7 +71,9 @@
             (let [id (<! (om/get-state owner :current-contact))]
               (if (nil? id)
                 (.setToken history "/")
-                (.setToken history (str "/" id))))
+                (let [contact (util/edn-chan {:url (str "/contacts/" id)})]
+                  (.setToken history (str "/" id))
+                  (om/update! app :current-contact contact))))
             (recur))))
     om/IRenderState
     (render-state [_ {:keys [current-contact]}]

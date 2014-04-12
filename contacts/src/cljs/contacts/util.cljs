@@ -1,6 +1,7 @@
 (ns contacts.util
   (:require [goog.events :as events]
-            [cljs.reader :as reader])
+            [cljs.reader :as reader]
+            [cljs.core.async :refer [chan put! close!]])
   (:import [goog.net XhrIo]
            goog.net.EventType
            [goog.events EventType]))
@@ -19,3 +20,13 @@
     (. xhr
       (send url (meths method) (when data (pr-str data))
         #js {"Content-Type" "application/edn"}))))
+
+(defn edn-chan [opts]
+  (let [opts (if-not (contains? opts :method)
+               (assoc opts :method :get)
+               opts)
+        c    (chan)]
+    (edn-xhr
+      (assoc opts
+        :on-complete (fn [edn] (put! c edn) (close! c))))
+    c))
