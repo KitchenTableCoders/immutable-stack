@@ -8,6 +8,21 @@
 
 
 
+(defn convert-db-id [x]
+  (cond
+    (instance? datomic.query.EntityMap x)
+    (assoc (into {} (map convert-db-id x))
+      :db/id (str (:db/id x)))
+
+    (instance? clojure.lang.MapEntry x)
+    [(first x) (convert-db-id (second x))]
+
+    (coll? x)
+    (into (empty x) (map convert-db-id x))
+
+    :else x))
+
+
 
 (defn list-contacts [db]
   (map
@@ -22,23 +37,9 @@
   (defn display-contacts [db]
     (let [contacts (list-contacts db)]
       (map
-        #(select-keys % [:person/last-name :person/first-name])
-        (sort-by :person/last-name contacts))))
+        #(select-keys % [:db/id :person/last-name :person/first-name])
+        (sort-by :person/last-name (map convert-db-id contacts)))))
 
-
-(defn convert-db-id [x]
-  (cond
-    (instance? datomic.query.EntityMap x)
-    (assoc (into {} (map convert-db-id x))
-      :db/id (str (:db/id x)))
-
-    (instance? clojure.lang.MapEntry x)
-    [(first x) (convert-db-id (second x))]
-
-    (coll? x)
-    (into (empty x) (map convert-db-id x))
-
-    :else x))
 
 
 
