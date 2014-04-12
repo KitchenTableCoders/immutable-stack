@@ -82,8 +82,7 @@
           (case (first (:route app))
             :list-contacts (om/build contacts-view (:contacts app)
                              {:opts {:current-contact current-contact}})
-            :view-contact  (om/build contact-view
-                              (get-in app [:contacts (second route)]))))))))
+            :view-contact  (om/build contact-view (:current-contact app))))))))
 
 (util/edn-xhr
   {:method :get
