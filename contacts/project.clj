@@ -14,7 +14,8 @@
                  [secretary "1.1.0"]
                  [ring/ring "1.2.2"]
                  [fogus/ring-edn "0.2.0"]
-                 [com.stuartsierra/component "0.2.1"]]
+                 [com.stuartsierra/component "0.2.1"]
+                 [org.clojure/core.async "0.1.278.0-76b25b-alpha"]]
 
   :source-paths ["src/clj"]
 
