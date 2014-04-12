@@ -2,9 +2,9 @@
   (:require [goog.events :as events]
             [cljs.reader :as reader]
             [cljs.core.async :refer [chan put! close!]])
-  (:import [goog.net XhrIo]
-           goog.net.EventType
-           [goog.events EventType]))
+  (:import goog.net.EventType
+           [goog.events EventType]
+           [goog.net XhrIo]))
 
 (def ^:private meths
   {:get "GET"
