@@ -17,18 +17,15 @@
         {:get
           {[""] :contacts
            ["/" :id] :contact-get}
-         :post
-           {[""] :contact-create}
-         :put {["/" :id] :contact-update}
+         :post  {[""] :contact-create}
+         :put   {["/" :id] :contact-update}
          :delete {["/" :id] :contact-delete}}
        "/phone"
-        {:post :phone-create
-         :put :phone-update
-         :delete :phone-delete}
+        {:post   {[""] :phone-create}
+         :put    {["/" :id] :phone-update}
+         :delete {["/" :id] :phone-delete}}}])
 
-       }])
 
-"phone"
 
 (defn index [req]
   (assoc (resource-response "html/index.html" {:root "public"})
@@ -38,6 +35,9 @@
   {:status (or status 200)
    :headers {"Content-Type" "application/edn"}
    :body (pr-str data)})
+
+
+;; CONTACT HANDLERS
 
 (defn contacts [req]
   (generate-response
@@ -70,6 +70,31 @@
       id)))
 
 
+;;;; PHONE HANLDERS
+
+(defn phone-create [req]
+  (generate-response
+    (contacts.datomic/create-phone
+      (:datomic-connection req)
+      ;; must have form {:person/_telephone person-id}
+      (:edn-params req))))
+
+(defn phone-update [req id]
+  (generate-response
+    (contacts.datomic/update-phone
+      (:datomic-connection req)
+      (assoc (:edn-params req) :db/id id))))
+
+(defn phone-delete [req id]
+  (generate-response
+    (contacts.datomic/delete-phone
+      (:datomic-connection req)
+      id)))
+
+
+
+;;;; PRIMARY HANDLER
+
 (defn handler [req]
   (let [match (bidi/match-route
                 routes
@@ -84,9 +109,19 @@
       :contact-update (contact-update req (:id (:params match)))
       :contact-delete (contact-delete req (:id (:params match)))
 
+      :phone-create (phone-create req)
+      :phone-update (phone-update req (:id (:params match)))
+      :phone-delete (phone-delete req (:id (:params match)))
+
       req)))
 
+
 (comment
+
+  ;; get contact
+  (handler {:uri "/contacts/17592186045438"
+            :request-method :get
+            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
 
   ;; create contact
   (handler {:uri "/contacts"
@@ -105,7 +140,24 @@
             :request-method :delete
             :datomic-connection (:connection (:db @contacts.core/servlet-system))})
 
+  ;; create phone
+  (handler {:uri "/phone"
+            :request-method :post
+            :edn-params {:telephone/number "000-111-2222"
+                         :person/_telephone "17592186045438"}
+            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
 
+  ;; update phone
+  (handler {:uri "/phone/17592186045444"
+            :request-method :put
+            :edn-params {:telephone/number "999-888-7777"}
+            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
+
+
+  ;; delete phone
+  (handler {:uri "/phone/17592186045444"
+            :request-method :delete
+            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
 
 
   )

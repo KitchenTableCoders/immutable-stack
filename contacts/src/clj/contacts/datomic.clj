@@ -63,9 +63,34 @@
   true)
 
 
+
+;; PHONE
+(defn create-phone [conn data]
+  (let [tempid (d/tempid :db.part/user)
+        r @(d/transact conn
+                       [(assoc
+                            data
+                          :db/id
+                          tempid
+                          :person/_telephone
+                          (edn/read-string (:person/_telephone data)))])]
+    (assoc data :db/id (str (d/resolve-tempid (:db-after r) (:tempids r) tempid)))))
+
+
+(defn update-phone [conn data]
+  @(d/transact conn [(assoc data :db/id (edn/read-string (:db/id data)))])
+  true)
+
+
+
+(defn delete-phone [conn id]
+  @(d/transact conn [[:db.fn/retractEntity (edn/read-string id)]])
+  true)
+
+
 (comment
   (create-contact (:connection (:db @contacts.core/servlet-system))
-                  {:person/first-name "Bib" :person/last-name "Bib"})
+                  {:person/first-name "person" :person/last-name "withphone"})
 
   (delete-contact (:connection (:db @contacts.core/servlet-system))
                   "17592186045423")
@@ -74,6 +99,19 @@
                   {:db/id "17592186045429" :person/first-name "Foooo"})
 
 
+  (create-phone (:connection (:db @contacts.core/servlet-system))
+                  {:person/_telephone "17592186045438"
+                   :telephone/number "123-456-7890"})
+
+  (d/touch (d/entity (d/db (:connection (:db @contacts.core/servlet-system)))
+             17592186045438))
+
+  (update-phone (:connection (:db @contacts.core/servlet-system))
+                {:db/id "17592186045440"
+                 :telephone/number "000-456-7890"})
+
+  (delete-phone (:connection (:db @contacts.core/servlet-system))
+                "17592186045440")
 
   )
 
