@@ -17,10 +17,9 @@
         {:get
           {[""] :contacts
            ["/" :id] :contact-get}
-         :update {[ :id] :contact-update}
-         :create {[ :id] :contact-create}
-         :delete {[ :id] :contact-delete}}}])
-
+         :update {[:id] :contact-update}
+         :create {[:id] :contact-create}
+         :delete {[:id] :contact-delete}}}])
 
 (defn index [req]
   (assoc (resource-response "html/index.html" {:root "public"})
@@ -79,8 +78,6 @@
       (assoc component :handler (handler (:connection datomic-connection)))))
   (stop [component]
     (.stop container)))
-
-
 
 (defn dev-server [web-port] (WebServer. web-port contacts-handler-dev true nil))
 
