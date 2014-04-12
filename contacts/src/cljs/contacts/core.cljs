@@ -40,8 +40,8 @@
   (dom/li nil
       (dom/div nil (:address/street address))
       (dom/div nil (str (:address/city address) ", "
-                        (:address/state address)
-                        (:address/zip address)))))
+                        (:address/state address) " "
+                        (:address/zipcode address)))))
 
 
 (defn contact-addresses [addresses]
