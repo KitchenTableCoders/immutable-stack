@@ -62,8 +62,11 @@
                :className "button"}
           "Back")
         (dom/div #js {:id "contact-info"}
-          (str (:person/last-name contact) ", "
-               (:person/first-name contact))
+          (dom/div #js {:className "editable"}
+            (dom/div #js {:className "contact-name"}
+              (str (:person/last-name contact) ", "
+                   (:person/first-name contact)))
+            (dom/div #js {:className "prompt"} "Edit"))
           (contact-numbers (:person/telephone contact))
           (contact-addresses (:person/address contact)))))))
 

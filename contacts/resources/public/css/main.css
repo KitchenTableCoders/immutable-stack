@@ -57,3 +57,19 @@ label {
 .list {
   font-size: 13px;
 }
+
+.editable div {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.editable .prompt {
+  display: none;
+  margin-left: 10px;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.editable:hover .prompt {
+  display: inline-block;
+}
