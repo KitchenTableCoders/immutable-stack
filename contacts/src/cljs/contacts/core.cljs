@@ -40,6 +40,7 @@
           (str (:person/last-name contact) ", "
                (:person/first-name contact)))))))
 
+
 (defn contacts-view [contacts owner {:keys [current-contact]}]
   (reify
     om/IRender
@@ -53,15 +54,17 @@
           (map (fn [p]
                  (let [id (:db/id p)]
                    (dom/li
-                    #js {:onClick (fn [e] (put! current-contact id))}
-                    (str (:person/last-name p) ", " (:person/first-name p)))))
+                     #js {:onClick (fn [e] (put! current-contact id))}
+                     (str (:person/last-name p) ", " (:person/first-name p)))))
                contacts))))))
+
 
 (defn app-view [app owner]
   (reify
     om/IInitState
     (init-state [_]
       {:current-contact (chan)})
+
     om/IWillMount
     (will-mount [_]
       (defroute "/" []
@@ -78,6 +81,7 @@
                   (.setToken history (str "/" id))
                   (om/update! app :current-contact contact))))
             (recur))))
+
     om/IRenderState
     (render-state [_ {:keys [current-contact]}]
       (let [route (:route app)
@@ -86,6 +90,7 @@
           (case (first (:route app))
             :list-contacts (om/build contacts-view (:contacts app) opts)
             :view-contact  (om/build contact-view (:current-contact app) opts)))))))
+
 
 (util/edn-xhr
   {:method :get
