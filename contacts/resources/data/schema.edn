@@ -21,6 +21,7 @@
   :db/ident :person/email
   :db/valueType :db.type/ref
   :db/cardinality :db.cardinality/many
+  :db/isComponent true
   :db/doc "A person's email addresses"
   :db.install/_attribute :db.part/db}
 
@@ -37,6 +38,7 @@
   :db/ident :person/telephone
   :db/valueType :db.type/ref
   :db/cardinality :db.cardinality/many
+  :db/isComponent true
   :db/doc "A peron's telephone contact information"
   :db.install/_attribute :db.part/db}
 
@@ -53,6 +55,7 @@
   :db/ident :person/address
   :db/valueType :db.type/ref
   :db/cardinality :db.cardinality/many
+  :db/isComponent true
   :db/doc "A person's physical addresses"
   :db.install/_attribute :db.part/db}
 

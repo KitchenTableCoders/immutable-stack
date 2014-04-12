@@ -1,7 +1,8 @@
 (ns contacts.datomic
   (:require [datomic.api :as d]
             [com.stuartsierra.component :as component]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [clojure.edn :as edn])
   (:import datomic.Util))
 
 
@@ -25,7 +26,26 @@
         (sort-by :person/last-name contacts))))
 
 
-(defn get-person [db])
+(defn convert-db-id [x]
+  (cond
+    (instance? datomic.query.EntityMap x)
+    (assoc (into {} (map convert-db-id x))
+      :db/id (str (:db/id x)))
+
+    (instance? clojure.lang.MapEntry x)
+    [(first x) (convert-db-id (second x))]
+
+    (coll? x)
+    (into (empty x) (map convert-db-id x))
+
+    :else x))
+
+
+
+(defn get-contact [db id-string]
+  (convert-db-id (d/touch (d/entity db (edn/read-string id-string)))))
+
+
 
 
 ;; return datoms to add

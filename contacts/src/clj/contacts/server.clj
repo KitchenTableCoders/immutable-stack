@@ -13,8 +13,14 @@
 (def routes
   ["" {"/" :index
        "/index.html" :index
-       "/contacts" :contacts}
-   ])
+       "/contacts"
+        {:get
+          {[""] :contacts
+           ["/" :id] :contact-get}
+         :update {[ :id] :contact-update}
+         :create {[ :id] :contact-create}
+         :delete {[ :id] :contact-delete}}}])
+
 
 (defn index [req]
   (assoc (resource-response "html/index.html" {:root "public"})
@@ -31,12 +37,22 @@
       (contacts.datomic/display-contacts
         (d/db (:datomic-connection req))))))
 
+(defn contact-get [req id]
+  (generate-response
+    (contacts.datomic/get-contact
+      (d/db (:datomic-connection req)) id)))
+
 (defn handler [req]
-  (let [match (bidi/match-route routes (:uri req))]
-    (println match)
+  (let [match (bidi/match-route
+                routes
+                (:uri req)
+                :request-method (:request-method req))]
+    ;(println match)
     (case (:handler match)
       :index (index req)
       :contacts (contacts req)
+      :contact-get (contact-get req (:id (:params match)))
+
       req)))
 
 (defn wrap-connection [handler conn]
