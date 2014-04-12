@@ -29,9 +29,22 @@ body {
   margin-top: 10px;
 }
 
-#contacts-list li {
+li {
   list-style: none;
   margin: 0;
   padding: 10px;
+}
+
+#contacts-list li {
   cursor: pointer;
+}
+
+label {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.section {
+  margin-top: 20px;
 }
