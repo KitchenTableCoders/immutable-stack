@@ -42,19 +42,58 @@
 
 
 
-
 (defn get-contact [db id-string]
   (convert-db-id (d/touch (d/entity db (edn/read-string id-string)))))
 
 
+(defn create-contact [conn data]
+  (let [tempid (d/tempid :db.part/user)
+        r @(d/transact conn [(assoc data :db/id tempid)])]
+    (assoc data :db/id (str (d/resolve-tempid (:db-after r) (:tempids r) tempid)))))
+
+
+(defn update-contact [conn data]
+  @(d/transact conn [(assoc data :db/id (edn/read-string (:db/id data)))])
+  true)
+
+
+
+(defn delete-contact [conn id]
+  @(d/transact conn [[:db.fn/retractEntity (edn/read-string id)]])
+  true)
+
+
+(comment
+  (create-contact (:connection (:db @contacts.core/servlet-system))
+                  {:person/first-name "Bib" :person/last-name "Bib"})
+
+  (delete-contact (:connection (:db @contacts.core/servlet-system))
+                  "17592186045423")
+
+  (update-contact (:connection (:db @contacts.core/servlet-system))
+                  {:db/id "17592186045429" :person/first-name "Foooo"})
+
+
+
+  )
+
+
+
+
+(defn create-phone [conn data])
+
+(defn update-phone [conn data])
+
+(defn delete-phone [conn data])
+
 
 
 ;; return datoms to add
-(defn add-person-datoms [db data])
 
 
 
-(defn remove-person-datoms [db data])
+
+
 
 (def initial-data
   (let [person-id (d/tempid :db.part/user)

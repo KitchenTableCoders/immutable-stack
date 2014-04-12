@@ -17,9 +17,18 @@
         {:get
           {[""] :contacts
            ["/" :id] :contact-get}
-         :update {[:id] :contact-update}
-         :create {[:id] :contact-create}
-         :delete {[:id] :contact-delete}}}])
+         :post
+           {[""] :contact-create}
+         :put {["/" :id] :contact-update}
+         :delete {["/" :id] :contact-delete}}
+       "/phone"
+        {:post :phone-create
+         :put :phone-update
+         :delete :phone-delete}
+
+       }])
+
+"phone"
 
 (defn index [req]
   (assoc (resource-response "html/index.html" {:root "public"})
@@ -41,6 +50,26 @@
     (contacts.datomic/get-contact
       (d/db (:datomic-connection req)) id)))
 
+(defn contact-create [req]
+  (generate-response
+    (contacts.datomic/create-contact
+      (:datomic-connection req)
+      ;; must have form {:person/first-name "x" :person/last-name "y}
+      (:edn-params req))))
+
+(defn contact-update [req id]
+  (generate-response
+    (contacts.datomic/update-contact
+      (:datomic-connection req)
+      (assoc (:edn-params req) :db/id id))))
+
+(defn contact-delete [req id]
+  (generate-response
+    (contacts.datomic/delete-contact
+      (:datomic-connection req)
+      id)))
+
+
 (defn handler [req]
   (let [match (bidi/match-route
                 routes
@@ -51,8 +80,36 @@
       :index (index req)
       :contacts (contacts req)
       :contact-get (contact-get req (:id (:params match)))
+      :contact-create (contact-create req)
+      :contact-update (contact-update req (:id (:params match)))
+      :contact-delete (contact-delete req (:id (:params match)))
 
       req)))
+
+(comment
+
+  ;; create contact
+  (handler {:uri "/contacts"
+            :request-method :post
+            :edn-params {:person/first-name "Bib" :person/last-name "Bibooo"}
+            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
+
+  ;; update contact
+  (handler {:uri "/contacts/17592186045434"
+            :request-method :put
+            :edn-params {:person/first-name "k" :person/last-name "b"}
+            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
+
+  ;; delete contact
+  (handler {:uri "/contacts/17592186045434"
+            :request-method :delete
+            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
+
+
+
+
+  )
+
 
 (defn wrap-connection [handler conn]
   (fn [req] (handler (assoc req :datomic-connection conn))))
