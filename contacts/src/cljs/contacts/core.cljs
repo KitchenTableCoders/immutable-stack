@@ -6,7 +6,8 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs.core.async :refer [chan put! >! <!]]
-            [contacts.util :as util])
+            [contacts.util :as util]
+            [contacts.components :as c])
   (:import [goog History]
            [goog.history EventType]))
 
@@ -51,27 +52,30 @@
       (map contact-address addresses))))
 
 
-(defn contact-view [contact owner {:keys [current-contact]}]
+(defn contact-view [contact owner {:keys [current-contact sync]}]
   (reify
     om/IRender
     (render [_]
-      (println contact)
       (dom/div #js {:id "contact-view"}
         (dom/button
           #js {:onClick (fn [e] (put! current-contact :none))
                :className "button"}
           "Back")
         (dom/div #js {:id "contact-info"}
-          (dom/div #js {:className "editable"}
-            (dom/div #js {:className "contact-name"}
-              (str (:person/last-name contact) ", "
-                   (:person/first-name contact)))
-            (dom/div #js {:className "prompt"} "Edit"))
+          (dom/div #js {:className "contact-name editable"}
+            (om/build c/editable contact
+              {:opts
+               {:edit-key :person/first-name
+                :on-edit
+                (fn [m]
+                  (put! sync
+                    {:op :update
+                     :data (select-keys (:value m) [:db/id (:edit-key m)])}))}}))
           (contact-numbers (:person/telephone contact))
           (contact-addresses (:person/address contact)))))))
 
 
-(defn contacts-view [contacts owner {:keys [current-contact]}]
+(defn contacts-view [contacts owner {:keys [current-contact sync]}]
   (reify
     om/IRender
     (render [_]
@@ -94,10 +98,13 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:current-contact (chan)})
+      {:current-contact (chan)
+       :sync (chan)})
 
     om/IWillMount
     (will-mount [_]
+
+      ;; routes
       (defroute "/" []
         (om/update! app :route [:list-contacts]))
       (defroute "/:id" {id :id}
@@ -105,7 +112,8 @@
         (when (= (:current-contact (om/value (om/get-props owner))) :none)
           (put! (om/get-state owner :current-contact) id)))
       (.setEnabled history true)
-      ;; go loop
+
+      ;; routing loop
       (go (loop []
             (let [id (<! (om/get-state owner :current-contact))]
               (if (= id :none)
@@ -113,12 +121,23 @@
                 (let [contact (<! (util/edn-chan {:url (str "/contacts/" id)}))]
                   (.setToken history (str "/" id))
                   (om/update! app :current-contact contact))))
-            (recur))))
+            (recur)))
+
+       ;; sync loop
+       (go (loop []
+             (let [{:keys [op data]} (<! (om/get-state owner :sync))]
+               (condp = op
+                 :update
+                 (<! (util/edn-chan
+                      {:method :put :url (str "/contacts/" (:db/id data))
+                       :data (dissoc data :db/id)})))
+               (recur)))))
 
     om/IRenderState
-    (render-state [_ {:keys [current-contact]}]
+    (render-state [_ {:keys [current-contact sync]}]
       (let [route (:route app)
-            opts  {:opts {:current-contact current-contact}}]
+            opts  {:opts {:current-contact current-contact
+                          :sync sync}}]
         (dom/div nil
           (case (first (:route app))
             :list-contacts (om/build contacts-view (:contacts app) opts)
