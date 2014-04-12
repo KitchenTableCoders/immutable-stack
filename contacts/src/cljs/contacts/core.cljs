@@ -80,12 +80,12 @@
             (recur))))
     om/IRenderState
     (render-state [_ {:keys [current-contact]}]
-      (let [route (:route app)]
+      (let [route (:route app)
+            opts  {:opts {:current-contact current-contact}}]
         (dom/div nil
           (case (first (:route app))
-            :list-contacts (om/build contacts-view (:contacts app)
-                             {:opts {:current-contact current-contact}})
-            :view-contact  (om/build contact-view (:current-contact app))))))))
+            :list-contacts (om/build contacts-view (:contacts app) opts)
+            :view-contact  (om/build contact-view (:current-contact app) opts)))))))
 
 (util/edn-xhr
   {:method :get
