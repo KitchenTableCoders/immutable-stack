@@ -9,6 +9,8 @@
 ;; =============================================================================
 ;; Helpers
 
+;; TODO: remove this and replace with Transit handler
+
 (defn convert-db-id [x]
   (cond
     (instance? datomic.query.EntityMap x)
@@ -27,21 +29,19 @@
 ;; =============================================================================
 ;; Queries
 
-(defn list-contacts [db]
-  (map
-    ;; won't roundtrip to conn bc segment already probably cached
-    #(d/entity db (first %))
-    (d/q '[:find ?eid
-          :where
-          ;; talk about how we can make it do first OR last name
-          [?eid :person/first-name]]
-        db)))
+(defn list-contacts [db selector]
+  (d/q '[:find (pull ?eid selector)
+         :in $ selector
+         :where
+         ;; talk about how we can make it do first OR last name
+         [?eid :person/first-name]]
+    db selector))
 
-  (defn display-contacts [db]
-    (let [contacts (list-contacts db)]
-      (map
-        #(select-keys % [:db/id :person/last-name :person/first-name])
-        (sort-by :person/last-name (map convert-db-id contacts)))))
+(defn display-contacts [db selector]
+  (let [contacts (list-contacts db selector)]
+    (map
+      #(select-keys % [:db/id :person/last-name :person/first-name])
+      (sort-by :person/last-name (map convert-db-id contacts)))))
 
 
 (defn get-contact [db id-string]
@@ -85,13 +85,6 @@
 (defn delete-phone [conn id]
   @(d/transact conn [[:db.fn/retractEntity (edn/read-string id)]])
   true)
-
-(defn create-phone [conn data])
-
-(defn update-phone [conn data])
-
-(defn delete-phone [conn data])
-
 
 ;; return datoms to add
 

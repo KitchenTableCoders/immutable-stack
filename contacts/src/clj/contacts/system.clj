@@ -1,7 +1,7 @@
 (ns contacts.system
   (:require [com.stuartsierra.component :as component]
             contacts.server
-            contacts.datomic))
+            [contacts.datomic :as contacts]))
 
 (defn dev-system [config-options]
   (let [{:keys [db-uri web-port]} config-options]
@@ -26,13 +26,17 @@
                       :web-port 8081}))
   (def s1 (component/start s))
 
-  (def conn (-> s1 :db :connection))
-
   (require '[datomic.api :as d])
+
+  (def conn (-> s1 :db :connection))
+  (def db (d/db conn))
 
   (d/transact conn (read-string (slurp "resources/data/initial.edn")))
 
   (let [db (d/db conn)]
     (d/pull db [:person/first-name :person/last-name {:person/telephone [:telephone/number]}]
       17592186045423))
+
+  (contacts/list-contacts db
+    [:person/first-name :person/last-name {:person/telephone [:telephone/number]}])
 )
