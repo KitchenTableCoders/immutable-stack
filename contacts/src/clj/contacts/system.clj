@@ -23,6 +23,16 @@
 
 (comment
   (def s (dev-system {:db-uri   "datomic:mem://localhost:4334/contacts"
-                  :web-port 8081}))
+                      :web-port 8081}))
   (def s1 (component/start s))
+
+  (def conn (-> s1 :db :connection))
+
+  (require '[datomic.api :as d])
+
+  (d/transact conn (read-string (slurp "resources/data/initial.edn")))
+
+  (let [db (d/db conn)]
+    (d/pull db [:person/first-name :person/last-name {:person/telephone [:telephone/number]}]
+      17592186045423))
 )
