@@ -14,6 +14,7 @@
 (comment
   (POST "http://localhost:8081/contacts"
     {:handler get-contacts
-     :params {:selector [:person/last-name]}
+     :params {:selector [:person/last-name :person/first-name
+                         {:person/telephone [:telephone/number]}]}
      :error-handler get-contacts-error})
   )
