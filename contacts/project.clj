@@ -6,16 +6,16 @@
 
   :jvm-opts ^:replace ["-Xms512m" "-Xmx512m" "-server"]
 
-  :dependencies [[org.clojure/clojure "1.5.1"]
-                 [org.clojure/clojurescript "0.0-2173"]
-                 [com.datomic/datomic-free "0.9.4699"]
+  :dependencies [[org.clojure/clojure "1.7.0-RC1"]
+                 [org.clojure/clojurescript "0.0-3291"]
+                 [com.datomic/datomic-free "0.9.5153"]
                  [bidi "1.10.2"]
-                 [om "0.5.3"]
+                 [org.omcljs/om "0.8.8"]
                  [secretary "1.1.0"]
                  [ring/ring "1.2.2"]
                  [fogus/ring-edn "0.2.0"]
                  [com.stuartsierra/component "0.2.1"]
-                 [org.clojure/core.async "0.1.278.0-76b25b-alpha"]]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
 
   :source-paths ["src/clj"]
 
