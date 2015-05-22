@@ -14,6 +14,8 @@
                  [secretary "1.1.0"]
                  [ring/ring "1.2.2"]
                  [fogus/ring-edn "0.2.0"]
+                 [com.cognitect/transit-clj "0.8.271"]
+                 [com.cognitect/transit-cljs "0.8.215"]
                  [com.stuartsierra/component "0.2.1"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
 

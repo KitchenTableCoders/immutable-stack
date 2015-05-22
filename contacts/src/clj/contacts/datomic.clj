@@ -2,51 +2,32 @@
   (:require [datomic.api :as d]
             [com.stuartsierra.component :as component]
             [clojure.java.io :as io]
-            [clojure.edn :as edn])
-  (:import datomic.Util))
-
-
-;; =============================================================================
-;; Helpers
-
-;; TODO: remove this and replace with Transit handler
-
-(defn convert-db-id [x]
-  (cond
-    (instance? datomic.query.EntityMap x)
-    (assoc (into {} (map convert-db-id x))
-      :db/id (str (:db/id x)))
-
-    (instance? clojure.lang.MapEntry x)
-    [(first x) (convert-db-id (second x))]
-
-    (coll? x)
-    (into (empty x) (map convert-db-id x))
-
-    :else x))
-
+            [clojure.edn :as edn]
+            [cognitect.transit :as t])
+  (:import datomic.Util
+           [java.io ByteArrayInputStream ByteArrayOutputStream]))
 
 ;; =============================================================================
 ;; Queries
 
-(defn list-contacts [db selector]
-  (d/q '[:find (pull ?eid selector)
-         :in $ selector
-         :where
-         ;; talk about how we can make it do first OR last name
-         [?eid :person/first-name]]
-    db selector))
+(defn contacts
+  ([db] (contacts db '[*]))
+  ([db selector]
+   (d/q '[:find (pull ?eid selector)
+          :in $ selector
+          :where
+          [?eid :person/first-name]] ;; talk about how we can make it do first OR last name
+     db selector)))
 
-(defn display-contacts [db selector]
-  (let [contacts (list-contacts db selector)]
-    (map
-      #(select-keys % [:db/id :person/last-name :person/first-name])
-      (sort-by :person/last-name (map convert-db-id contacts)))))
+(defn get-contact
+  ([db id] (get-contact db id '[*]))
+  ([db id selector]
+   (d/pull db selector id)))
 
+;; =============================================================================
+;; CRUD
 
-(defn get-contact [db id-string]
-  (convert-db-id (d/touch (d/entity db (edn/read-string id-string)))))
-
+;; TODO: rewrite this into something generic, client will send transaction
 
 (defn create-contact [conn data]
   (let [tempid (d/tempid :db.part/user)
@@ -85,30 +66,6 @@
 (defn delete-phone [conn id]
   @(d/transact conn [[:db.fn/retractEntity (edn/read-string id)]])
   true)
-
-;; return datoms to add
-
-(def initial-data
-  (let [person-id (d/tempid :db.part/user)
-        address-id (d/tempid :db.part/user)
-        phone-id (d/tempid :db.part/user)
-        email-id (d/tempid :db.part/user)]
-    [{:db/id person-id
-      :person/first-name "Bob"
-      :person/last-name  "Smith"
-      :person/email      email-id
-      :person/telephone phone-id
-      :person/address address-id}
-     {:db/id email-id
-      :email/address     "bob.smith@gmail.com"}
-     {:db/id  phone-id
-      :telephone/number "123-456-7890"}
-     {:db/id address-id
-      :address/street "111 Main St"
-      :address/city "Brooklyn"
-      :address/state "NY"
-      :address/zipcode "11234"}]))
-
 
 (defrecord DatomicDatabase [uri schema initial-data connection]
   component/Lifecycle

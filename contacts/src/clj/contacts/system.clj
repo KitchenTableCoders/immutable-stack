@@ -38,5 +38,5 @@
       17592186045423))
 
   (contacts/list-contacts db
-    [:person/first-name :person/last-name {:person/telephone [:telephone/number]}])
+    [:db/id :person/first-name :person/last-name {:person/telephone [:telephone/number]}])
 )
