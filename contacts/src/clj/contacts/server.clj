@@ -4,7 +4,7 @@
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.edn :refer [wrap-edn-params]]
             [contacts.middleware
-             :refer [wrap-transit-params wrap-transit-response]]
+             :refer [wrap-transit-body wrap-transit-response]]
             [ring.middleware.resource :refer [wrap-resource]]
             [bidi.bidi :refer [make-handler] :as bidi]
             [com.stuartsierra.component :as component]
@@ -39,7 +39,7 @@
 
 (defn generate-response [data & [status]]
   {:status (or status 200)
-   :headers {"Content-Type" "application/edn"}
+   :headers {"Content-Type" "application/transit+json"}
    :body (pr-str data)})
 
 
@@ -127,9 +127,10 @@
 (defn wrap-connection [handler conn]
   (fn [req] (handler (assoc req :datomic-connection conn))))
 
+
 (defn contacts-handler [conn]
   (wrap-resource
-    (wrap-edn-params (wrap-connection handler conn))
+    (wrap-transit-response (wrap-transit-body (wrap-connection handler conn)))
     "public"))
 
 
