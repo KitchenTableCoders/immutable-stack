@@ -47,7 +47,7 @@
 (defn contacts [req]
   (generate-response
     (vec
-      (contacts.datomic/display-contacts
+      (contacts.datomic/contact
         (d/db (:datomic-connection req))))))
 
 
@@ -125,7 +125,6 @@
 
 (defn wrap-connection [handler conn]
   (fn [req] (handler (assoc req :datomic-connection conn))))
-
 
 (defn contacts-handler [conn]
   (wrap-resource

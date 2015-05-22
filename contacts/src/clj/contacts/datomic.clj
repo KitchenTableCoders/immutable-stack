@@ -4,8 +4,7 @@
             [clojure.java.io :as io]
             [clojure.edn :as edn]
             [cognitect.transit :as t])
-  (:import datomic.Util
-           [java.io ByteArrayInputStream ByteArrayOutputStream]))
+  (:import datomic.Util))
 
 ;; =============================================================================
 ;; Queries
