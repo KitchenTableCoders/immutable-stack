@@ -2,9 +2,9 @@
 (require '[cljs.repl :as repl])
 (require '[cljs.repl.browser :as browser])
 
-(b/build (b/inputs "src/cljs" "src/dev")
+(b/build (b/inputs "src/dev")
   {:main 'contacts.dev
-   :asset-path "out"
+   :asset-path "js"
    :output-to "resources/public/js/app.js"
    :output-dir "resources/public/js"})
 

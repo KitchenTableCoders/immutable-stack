@@ -130,7 +130,7 @@
 
 (defn contacts-handler [conn]
   (wrap-resource
-    (wrap-transit-response (wrap-transit-body (wrap-connection handler conn)))
+    (wrap-transit-body (wrap-connection handler conn))
     "public"))
 
 
