@@ -4,7 +4,8 @@
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.edn :refer [wrap-edn-params]]
             [contacts.middleware
-             :refer [wrap-transit-body wrap-transit-response]]
+             :refer [wrap-transit-body wrap-transit-response
+                     wrap-transit-params]]
             [ring.middleware.resource :refer [wrap-resource]]
             [bidi.bidi :refer [make-handler] :as bidi]
             [com.stuartsierra.component :as component]
@@ -21,7 +22,7 @@
         {:get
           {[""] :contacts
            ["/" :id] :contact-get}
-         :post  {[""] :contact-create}
+         :post  {[""] :contacts}
          :put   {["/" :id] :contact-update}
          :delete {["/" :id] :contact-delete}}
        "/phone"
@@ -38,9 +39,9 @@
 
 
 (defn generate-response [data & [status]]
-  {:status (or status 200)
+  {:status  (or status 200)
    :headers {"Content-Type" "application/transit+json"}
-   :body (pr-str data)})
+   :body    data})
 
 
 ;; CONTACT HANDLERS
@@ -49,7 +50,8 @@
   (generate-response
     (vec
       (contacts.datomic/contacts
-        (d/db (:datomic-connection req))))))
+        (d/db (:datomic-connection req))
+        (-> req :transit-params :selector)))))
 
 
 (defn contact-get [req id]
@@ -130,7 +132,8 @@
 
 (defn contacts-handler [conn]
   (wrap-resource
-    (wrap-transit-body (wrap-connection handler conn))
+    (wrap-transit-response
+      (wrap-transit-params (wrap-connection handler conn)))
     "public"))
 
 
