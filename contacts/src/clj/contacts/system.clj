@@ -31,12 +31,6 @@
   (def conn (-> s1 :db :connection))
   (def db (d/db conn))
 
-  (d/transact conn (read-string (slurp "resources/data/initial.edn")))
-
-  (let [db (d/db conn)]
-    (d/pull db [:person/first-name :person/last-name {:person/telephone [:telephone/number]}]
-      17592186045423))
-
-  (contacts/list-contacts db
+  (contacts/contacts db
     [:db/id :person/first-name :person/last-name {:person/telephone [:telephone/number]}])
 )

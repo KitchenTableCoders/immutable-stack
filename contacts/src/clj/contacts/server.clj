@@ -48,7 +48,7 @@
 (defn contacts [req]
   (generate-response
     (vec
-      (contacts.datomic/contact
+      (contacts.datomic/contacts
         (d/db (:datomic-connection req))))))
 
 
