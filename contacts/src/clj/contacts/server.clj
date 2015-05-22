@@ -3,12 +3,13 @@
             [ring.util.response :refer [file-response resource-response]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.edn :refer [wrap-edn-params]]
+            [contacts.middleware
+             :refer [wrap-transit-params wrap-transit-response]]
             [ring.middleware.resource :refer [wrap-resource]]
             [bidi.bidi :refer [make-handler] :as bidi]
             [com.stuartsierra.component :as component]
             [datomic.api :as d]
-            [contacts.datomic]
-            ))
+            [contacts.datomic]))
 
 ;; =============================================================================
 ;; Routing

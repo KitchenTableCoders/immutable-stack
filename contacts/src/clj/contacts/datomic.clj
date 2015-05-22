@@ -79,7 +79,7 @@
 (defn new-database [db-uri]
   (DatomicDatabase. db-uri
                     (first (Util/readAll (io/reader (io/resource "data/schema.edn"))))
-                    initial-data
+                    (first (Util/readAll (io/reader (io/resource "data/initial.edn"))))
                     nil))
 
 ;; =============================================================================
