@@ -2,7 +2,6 @@
   (:require [contacts.util :as util]
             [ring.util.response :refer [file-response resource-response]]
             [ring.adapter.jetty :refer [run-jetty]]
-            [ring.middleware.edn :refer [wrap-edn-params]]
             [contacts.middleware
              :refer [wrap-transit-body wrap-transit-response
                      wrap-transit-params]]

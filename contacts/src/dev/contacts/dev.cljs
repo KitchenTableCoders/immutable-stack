@@ -1,7 +1,6 @@
 (ns contacts.dev
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [clojure.browser.repl :as repl]
-            [ajax.core :refer [POST]]
             [cljs-http.client :as http]
             [cljs.pprint :as pprint :refer [pprint]]))
 
