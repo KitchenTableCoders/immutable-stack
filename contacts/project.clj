@@ -13,7 +13,6 @@
                  [org.omcljs/om "0.8.8"]
                  [secretary "1.2.3"]
                  [ring/ring "1.2.2"]
-                 [fogus/ring-edn "0.2.0"]
                  [com.cognitect/transit-clj "0.8.271"]
                  [com.cognitect/transit-cljs "0.8.215"]
                  [cljs-http "0.1.30" :exclusions
