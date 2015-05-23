@@ -24,6 +24,7 @@
 (comment
   (def s (dev-system {:db-uri   "datomic:mem://localhost:4334/contacts"
                       :web-port 8081}))
+
   (def s1 (component/start s))
 
   (require '[datomic.api :as d])
@@ -32,5 +33,14 @@
   (def db (d/db conn))
 
   (contacts/contacts db
-    [:db/id :person/first-name :person/last-name {:person/telephone [:telephone/number]}])
+    [:db/id :person/first-name :person/last-name
+     {:person/telephone [:telephone/number]}])
+
+  (d/q '[:find (pull ?p sel)
+         :in $ ?street sel
+         :where
+         [?a :address/street ?street]
+         [?p :person/address ?a]]
+    db "Maple Street"
+    [:person/first-name :person/last-name])
 )

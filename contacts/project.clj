@@ -16,7 +16,9 @@
                  [fogus/ring-edn "0.2.0"]
                  [com.cognitect/transit-clj "0.8.271"]
                  [com.cognitect/transit-cljs "0.8.215"]
-                 [cljs-ajax "0.3.11"]
+                 [cljs-http "0.1.30" :exclusions
+                  [org.clojure/clojure org.clojure/clojurescript
+                   com.cognitect/transit-cljs]]
                  [com.stuartsierra/component "0.2.1"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
 
