@@ -43,17 +43,18 @@
 (def contact-list (om/create-factory ContactList))
 
 (defn main []
-  (let [c (http/post "http://localhost:8081/contacts"
-            {:transit-params {:selector (om/queries ContactList)}})]
+  (let [c (http/post "http://localhost:8081/query"
+            {:transit-params (om/queries ContactList)})]
     (go
-      (let [contacts (vec (map first (:body (<! c))))]
-        (js/React.render
+      (let [contacts (:body (<! c))]
+        (println (contact-list contacts))
+        #_(js/React.render
           (contact-list contacts)
           (gdom/getElement "contacts"))))))
 
 (comment
-  (let [c (http/post "http://localhost:8081/contacts"
-            {:transit-params {:selector (om/queries Contact)}})]
+  (let [c (http/post "http://localhost:8081/query"
+            {:transit-params (om/queries ContactList)})]
     (go (println (:body (<! c)))))
 
   (main)
@@ -62,6 +63,6 @@
 
   ;; works
   (om/bind-query
-    (:contacts (om/-queries ContactList))
+    (:contacts (om/queries ContactList))
     (:contacts (om/-params ContactList)))
   )

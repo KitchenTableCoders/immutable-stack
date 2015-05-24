@@ -59,7 +59,9 @@
 
                (vector? v)
                (let [fk (if (and context (= :self k)) context k)]
-                 (assoc ret k (fetch conn fk v)))
+                 (assoc ret
+                   k (vec (cond->> (fetch conn fk v)
+                            (= :self k) (map #(do {:self %}))))))
 
                :else (throw
                        (ex-info (str "Invalid query-map value " v)
