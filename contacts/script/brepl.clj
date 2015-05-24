@@ -9,5 +9,6 @@
    :output-dir "resources/public/js"})
 
 (repl/repl
-  (browser/repl-env)
+  (browser/repl-env :host-port 8081)
+  :asset-path "js"
   :output-dir "resources/public/js")

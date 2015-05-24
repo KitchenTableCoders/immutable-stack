@@ -22,13 +22,18 @@
   (render [this]
     (let [{:keys [:person/first-name :person/last-name]}
           (:self (om/props this))]
-      (println (om/props this))
       (dom/div nil
         (str last-name ", " first-name)))))
 
 (def contact (om/create-factory Contact))
 
 (defui ContactList
+  static om/IQueryParams
+  (params [this]
+    {:contacts {:contact (om/complete-query Contact)}})
+  static om/IQuery
+  (queries [this]
+    '{:contacts ?contact})
   Object
   (render [this]
     (apply dom/ul nil
@@ -38,7 +43,7 @@
 
 (defn main []
   (let [c (http/post "http://localhost:8081/contacts"
-            {:transit-params {:selector (om/complete-query Contact)}})]
+            {:transit-params {:selector (om/complete-query ContactList)}})]
     (go
       (js/React.render
         (contact-list (:body (<! c)))
@@ -50,4 +55,11 @@
     (go (println (:body (<! c)))))
 
   (main)
+
+  (om/get-query ContactList :contacts)
+
+  ;; works
+  (om/bind-query
+    (:contacts (om/queries ContactList))
+    (:contacts (om/params ContactList)))
   )
