@@ -17,17 +17,8 @@
 (def routes
   ["" {"/" :index
        "/index.html" :index
-       "/contacts"
-        {:get
-          {[""] :contacts
-           ["/" :id] :contact-get}
-         :post  {[""] :contacts}
-         :put   {["/" :id] :contact-update}
-         :delete {["/" :id] :contact-delete}}
-       "/phone"
-        {:post   {[""] :phone-create}
-         :put    {["/" :id] :phone-update}
-         :delete {["/" :id] :phone-delete}}}])
+       "/query"
+        {:post {[""] :query}}}])
 
 ;; =============================================================================
 ;; Handlers
@@ -43,77 +34,52 @@
 
 ;; CONTACT HANDLERS
 
-(defn contacts [req]
-  (generate-response
-    (vec
-      (contacts.datomic/contacts
-        (d/db (:datomic-connection req))
-        (-> req :transit-params :selector)))))
+(defn contacts [conn selector]
+  (contacts.datomic/contacts (d/db conn) selector))
 
-(defn contact-get [req id]
-  (generate-response
-    (contacts.datomic/get-contact
-      (d/db (:datomic-connection req)) id)))
+(defn contact-get [conn id]
+  (contacts.datomic/get-contact (d/db conn) id))
 
-(defn contact-create [req]
-  (generate-response
-    (contacts.datomic/create-contact
-      (:datomic-connection req)
-      ;; must have form {:person/first-name "x" :person/last-name "y}
-      (:transit-params req))))
+(defn fetch
+  ([conn k] (fetch conn '[*]))
+  ([conn k selector]
+    (case k
+      :contacts (contacts conn selector)
+      (throw
+        (ex-info (str "No data route for " k)
+          {:type :error/invalid-data-route})))))
 
-(defn contact-update [req id]
-  (generate-response
-    (contacts.datomic/update-contact
-      (:datomic-connection req)
-      (assoc (:transit-params req) :db/id id))))
+(defn populate
+  ([conn query-map] (populate conn query-map nil))
+  ([conn query-map context]
+   (letfn [(step [ret k v]
+             (cond
+               (map? v)
+               (assoc ret k (populate conn v k))
 
-(defn contact-delete [req id]
-  (generate-response
-    (contacts.datomic/delete-contact
-      (:datomic-connection req)
-      id)))
+               (vector? v)
+               (let [fk (if (and context (= :self k)) context k)]
+                 (assoc ret k (fetch conn fk v)))
 
-;;;; PHONE HANLDERS
+               :else (throw
+                       (ex-info (str "Invalid query-map value " v)
+                         {:type :error/invalid-query-map-value}))))]
+     (reduce-kv step {} query-map))))
 
-(defn phone-create [req]
+(defn query [req]
   (generate-response
-    (contacts.datomic/create-phone
-      (:datomic-connection req)
-      ;; must have form {:person/_telephone person-id}
-      (:transit-params req))))
-
-(defn phone-update [req id]
-  (generate-response
-    (contacts.datomic/update-phone
-      (:datomic-connection req)
-      (assoc (:transit-params req) :db/id id))))
-
-(defn phone-delete [req id]
-  (generate-response
-    (contacts.datomic/delete-phone
-      (:datomic-connection req)
-      id)))
+    (populate (:datomic-connection req) (:transit-params req))))
 
 ;;;; PRIMARY HANDLER
 
 (defn handler [req]
-  (let [match (bidi/match-route
-                routes
-                (:uri req)
+  (let [match (bidi/match-route routes (:uri req)
                 :request-method (:request-method req))]
     ;(println match)
     (case (:handler match)
       :index (index req)
-      :contacts (contacts req)
+      :query (query req)
       :contact-get (contact-get req (:id (:params match)))
-      :contact-create (contact-create req)
-      :contact-update (contact-update req (:id (:params match)))
-      :contact-delete (contact-delete req (:id (:params match)))
-
-      :phone-create (phone-create req)
-      :phone-update (phone-update req (:id (:params match)))
-      :phone-delete (phone-delete req (:id (:params match)))
       req)))
 
 (defn wrap-connection [handler conn]
@@ -153,48 +119,20 @@
 ;; Route Testing
 
 (comment
+  (require '[contacts.core :as cc])
+  (cc/dev-start)
 
   ;; get contact
-  (handler {:uri "/contacts/17592186045438"
-            :request-method :get
-            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
+  (handler {:uri "/query"
+            :request-method :post
+            :transit-params {:contacts {:self [:person/first-name :person/last-name]}}
+            :datomic-connection (:connection (:db @cc/servlet-system))})
 
   ;; create contact
   (handler {:uri "/contacts"
             :request-method :post
             :transit-params {:person/first-name "Bib" :person/last-name "Bibooo"}
-            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
-
-  ;; update contact
-  (handler {:uri "/contacts/17592186045434"
-            :request-method :put
-            :transit-params {:person/first-name "k" :person/last-name "b"}
-            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
-
-  ;; delete contact
-  (handler {:uri "/contacts/17592186045434"
-            :request-method :delete
-            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
-
-  ;; create phone
-  (handler {:uri "/phone"
-            :request-method :post
-            :transit-params {:telephone/number "000-111-2222"
-                         :person/_telephone "17592186045438"}
-            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
-
-  ;; update phone
-  (handler {:uri "/phone/17592186045444"
-            :request-method :put
-            :transit-params {:telephone/number "999-888-7777"}
-            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
-
-
-  ;; delete phone
-  (handler {:uri "/phone/17592186045444"
-            :request-method :delete
-            :datomic-connection (:connection (:db @contacts.core/servlet-system))})
-
+            :datomic-connection (:connection (:db @cc/servlet-system))})
 
   )
 

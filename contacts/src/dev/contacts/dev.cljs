@@ -16,7 +16,7 @@
 
 (defui Contact
   static om/IQuery
-  (queries [this]
+  (-queries [this]
     '{:self [:person/first-name :person/last-name]})
   Object
   (render [this]
@@ -29,16 +29,17 @@
 
 (defui ContactList
   static om/IQueryParams
-  (params [this]
-    {:contacts {:contact (om/complete-query Contact)}})
+  (-params [this]
+    {:contacts {:contact (om/queries Contact)}})
   static om/IQuery
-  (queries [this]
+  (-queries [this]
     '{:contacts ?contact})
   Object
   (render [this]
     (let [{:keys [contacts]} (om/props this)]
+      (println (om/props this))
       (apply dom/ul nil
-       (map #(dom/li nil (contact %)) contacts)))))
+        (map #(dom/li nil (contact %)) contacts)))))
 
 (def contact-list (om/create-factory ContactList))
 
@@ -46,9 +47,10 @@
   (let [c (http/post "http://localhost:8081/contacts"
             {:transit-params {:selector (om/complete-query ContactList)}})]
     (go
-      (js/React.render
-        (contact-list (:body (<! c)))
-        (gdom/getElement "contacts")))))
+      (let [contacts (vec (map first (:body (<! c))))]
+        (js/React.render
+          (contact-list contacts)
+          (gdom/getElement "contacts"))))))
 
 (comment
   (let [c (http/post "http://localhost:8081/contacts"
