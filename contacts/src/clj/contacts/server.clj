@@ -50,22 +50,25 @@
           {:type :error/invalid-data-route})))))
 
 (defn populate
-  ([conn query-map] (populate conn query-map nil))
-  ([conn query-map context]
+  ([conn query-map]
    (letfn [(step [ret k v]
              (cond
                (map? v)
-               (assoc ret k (populate conn v k))
+               (if (contains? v :self)
+                 (assoc ret
+                   k (->> (fetch conn k (:self v))
+                       (map #(merge {:self %}
+                              (populate conn (dissoc v :self))))
+                       vec))
+                 (assoc ret k (populate conn v)))
 
                (vector? v)
-               (let [fk (if (and context (= :self k)) context k)]
-                 (assoc ret
-                   k (vec (cond->> (fetch conn fk v)
-                            (= :self k) (map #(do {:self %}))))))
+               (fetch conn k v)
 
-               :else (throw
-                       (ex-info (str "Invalid query-map value " v)
-                         {:type :error/invalid-query-map-value}))))]
+               :else
+               (throw
+                 (ex-info (str "Invalid query-map value " v)
+                   {:type :error/invalid-query-map-value}))))]
      (reduce-kv step {} query-map))))
 
 (defn query [req]

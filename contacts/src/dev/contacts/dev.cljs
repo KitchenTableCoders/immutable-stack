@@ -36,7 +36,6 @@
   Object
   (render [this]
     (let [{:keys [contacts]} (om/props this)]
-      (println (om/props this))
       (apply dom/ul nil
         (map #(dom/li nil (contact %)) contacts)))))
 
@@ -47,8 +46,7 @@
             {:transit-params (om/queries ContactList)})]
     (go
       (let [contacts (:body (<! c))]
-        (println (contact-list contacts))
-        #_(js/React.render
+        (js/React.render
           (contact-list contacts)
           (gdom/getElement "contacts"))))))
 
