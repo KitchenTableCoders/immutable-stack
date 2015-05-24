@@ -21,9 +21,8 @@
   Object
   (render [this]
     (let [{:keys [:person/first-name :person/last-name]}
-          (:self (om/props this))]
-      (dom/div nil
-        (str last-name ", " first-name)))))
+          (first (:self (om/props this)))]
+      (dom/div nil (str last-name ", " first-name)))))
 
 (def contact (om/create-factory Contact))
 
@@ -45,7 +44,7 @@
 
 (defn main []
   (let [c (http/post "http://localhost:8081/contacts"
-            {:transit-params {:selector (om/complete-query ContactList)}})]
+            {:transit-params {:selector (om/queries ContactList)}})]
     (go
       (let [contacts (vec (map first (:body (<! c))))]
         (js/React.render
@@ -54,7 +53,7 @@
 
 (comment
   (let [c (http/post "http://localhost:8081/contacts"
-            {:transit-params {:selector (om/complete-query Contact)}})]
+            {:transit-params {:selector (om/queries Contact)}})]
     (go (println (:body (<! c)))))
 
   (main)
@@ -63,6 +62,6 @@
 
   ;; works
   (om/bind-query
-    (:contacts (om/queries ContactList))
-    (:contacts (om/params ContactList)))
+    (:contacts (om/-queries ContactList))
+    (:contacts (om/-params ContactList)))
   )

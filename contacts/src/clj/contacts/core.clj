@@ -10,7 +10,7 @@
 (defn dev-start []
   (let [sys  (system/dev-system
                {:db-uri   "datomic:mem://localhost:4334/contacts"
-                :web-port 8080})
+                :web-port 8081})
         sys' (component/start sys)]
     (reset! servlet-system sys')
     sys'))
