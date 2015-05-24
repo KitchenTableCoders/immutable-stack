@@ -7,10 +7,10 @@
   :jvm-opts ^:replace ["-Xms512m" "-Xmx512m" "-server"]
 
   :dependencies [[org.clojure/clojure "1.7.0-RC1"]
-                 [org.clojure/clojurescript "0.0-3291"]
+                 [org.clojure/clojurescript "0.0-3298"]
                  [com.datomic/datomic-free "0.9.5153"]
                  [bidi "1.10.2"]
-                 [org.omcljs/om "0.8.8"]
+                 [org.omcljs/om "0.9.0-SNAPSHOT"]
                  [secretary "1.2.3"]
                  [ring/ring "1.2.2"]
                  [com.cognitect/transit-clj "0.8.271"]

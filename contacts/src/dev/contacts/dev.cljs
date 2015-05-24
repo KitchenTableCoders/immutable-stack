@@ -2,7 +2,10 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [clojure.browser.repl :as repl]
             [cljs-http.client :as http]
-            [cljs.pprint :as pprint :refer [pprint]]))
+            [cljs.pprint :as pprint :refer [pprint]]
+            [goog.dom :as gdom]
+            [om.next :as om :refer-macros [defui]]
+            [om.dom :as dom]))
 
 (defonce conn
   (repl/connect "http://localhost:9000/repl"))
@@ -11,10 +14,40 @@
   (println) ;; flush past prompt
   (pprint x))
 
+(defui Contact
+  static om/IQuery
+  (queries [this]
+    '{:self [:person/first-name :person/last-name]})
+  Object
+  (render [this]
+    (let [{:keys [:person/first-name :person/last-name]}
+          (:self (om/props this))]
+      (println (om/props this))
+      (dom/div nil
+        (str last-name ", " first-name)))))
+
+(def contact (om/create-factory Contact))
+
+(defui ContactList
+  Object
+  (render [this]
+    (apply dom/ul nil
+      (map #(dom/li nil (contact %)) (om/props this)))))
+
+(def contact-list (om/create-factory ContactList))
+
+(defn main []
+  (let [c (http/post "http://localhost:8081/contacts"
+            {:transit-params {:selector (om/complete-query Contact)}})]
+    (go
+      (js/React.render
+        (contact-list (:body (<! c)))
+        (gdom/getElement "contacts")))))
+
 (comment
   (let [c (http/post "http://localhost:8081/contacts"
-            {:transit-params
-             {:selector [:person/last-name :person/first-name
-                         {:person/telephone [:telephone/number]}]}})]
-    (go (log (:body (<! c)))))
+            {:transit-params {:selector (om/complete-query Contact)}})]
+    (go (println (:body (<! c)))))
+
+  (main)
   )
