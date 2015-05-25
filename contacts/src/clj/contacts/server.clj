@@ -41,8 +41,9 @@
   (contacts.datomic/get-contact (d/db conn) id))
 
 (defn fetch
-  ([conn k] (fetch conn '[*]))
-  ([conn k selector]
+  ([conn k] (fetch conn k '[*]))
+  ([conn k selector] (fetch conn k selector nil))
+  ([conn k selector context]
     (case k
       :contacts (contacts conn selector)
       (throw
@@ -50,7 +51,8 @@
           {:type :error/invalid-data-route})))))
 
 (defn populate
-  ([conn query-map]
+  ([conn query-map] (populate conn query-map nil))
+  ([conn query-map context]
    (letfn [(step [ret k v]
              (cond
                (map? v)
@@ -58,12 +60,12 @@
                  (assoc ret
                    k (->> (fetch conn k (:self v))
                        (map #(merge {:self %}
-                              (populate conn (dissoc v :self))))
+                              (populate conn (dissoc v :self) %)))
                        vec))
                  (assoc ret k (populate conn v)))
 
                (vector? v)
-               (fetch conn k v)
+               (fetch conn k v context)
 
                :else
                (throw
