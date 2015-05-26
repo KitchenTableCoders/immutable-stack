@@ -43,7 +43,7 @@
     '[{:app/contacts ?contact}])
   Object
   (render [this]
-    (let [{:keys [contacts]} (om/props this)]
+    (let [{:keys [:app/contacts]} (om/props this)]
       (apply dom/ul nil
         (map #(dom/li nil (contact %)) contacts)))))
 

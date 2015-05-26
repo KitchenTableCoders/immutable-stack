@@ -126,7 +126,7 @@
   ;; get contact
   (handler {:uri "/query"
             :request-method :post
-            :transit-params [{:contacts [:person/first-name :person/last-name]}]
+            :transit-params [{:app/contacts [:person/first-name :person/last-name]}]
             :datomic-connection (:connection (:db @cc/servlet-system))})
 
   ;; create contact
