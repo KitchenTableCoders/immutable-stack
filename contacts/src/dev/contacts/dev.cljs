@@ -16,23 +16,31 @@
 
 (defui Contact
   static om/IQuery
-  (-queries [this]
-    '{:self [:person/first-name :person/last-name]})
+  (-query [this]
+    '[:person/first-name :person/last-name
+      {:person/telephone [:telephone/number]}])
   Object
   (render [this]
-    (let [{:keys [:person/first-name :person/last-name]}
-          (first (:self (om/props this)))]
-      (dom/div nil (str last-name ", " first-name)))))
+    (let [{:keys [:person/first-name :person/last-name] :as props}
+          (first (om/props this))]
+      (dom/div nil
+        (dom/div nil
+          (dom/label nil "Full Name:")
+          (dom/span nil (str last-name ", " first-name)))
+        (dom/div nil
+          (dom/label nil "Number:")
+          (dom/span nil
+            (:telephone/number (first (:person/telephone props)))))))))
 
 (def contact (om/create-factory Contact))
 
 (defui ContactList
   static om/IQueryParams
   (-params [this]
-    {:contacts {:contact (om/queries Contact)}})
+    {:contact (om/query Contact)})
   static om/IQuery
-  (-queries [this]
-    '{:contacts ?contact})
+  (-query [this]
+    '[{:app/contacts ?contact}])
   Object
   (render [this]
     (let [{:keys [contacts]} (om/props this)]
@@ -43,7 +51,7 @@
 
 (defn main []
   (let [c (http/post "http://localhost:8081/query"
-            {:transit-params (om/queries ContactList)})]
+            {:transit-params (om/query ContactList)})]
     (go
       (let [contacts (:body (<! c))]
         (js/React.render
@@ -52,15 +60,13 @@
 
 (comment
   (let [c (http/post "http://localhost:8081/query"
-            {:transit-params (om/queries ContactList)})]
+            {:transit-params (om/query ContactList)})]
     (go (println (:body (<! c)))))
 
   (main)
 
-  (om/get-query ContactList :contacts)
-
   ;; works
   (om/bind-query
-    (:contacts (om/queries ContactList))
-    (:contacts (om/-params ContactList)))
+    (om/-query ContactList)
+    (om/-params ContactList))
   )

@@ -40,38 +40,32 @@
 (defn contact-get [conn id]
   (contacts.datomic/get-contact (d/db conn) id))
 
+(defmulti -fetch (fn [_ k _] k))
+
+(defmethod -fetch :contacts
+  [conn _ selector]
+  (contacts conn selector))
+
 (defn fetch
   ([conn k] (fetch conn k '[*]))
-  ([conn k selector] (fetch conn k selector nil))
-  ([conn k selector context]
-    (case k
-      :contacts (contacts conn selector)
-      (throw
-        (ex-info (str "No data route for " k)
-          {:type :error/invalid-data-route})))))
+  ([conn k selector]
+    (-fetch conn k selector)))
 
-(defn populate
-  ([conn query-map] (populate conn query-map nil))
-  ([conn query-map context]
-   (letfn [(step [ret k v]
-             (cond
-               (map? v)
-               (if (contains? v :self)
-                 (assoc ret
-                   k (->> (fetch conn k (:self v))
-                       (map #(merge {:self %}
-                              (populate conn (dissoc v :self) %)))
-                       vec))
-                 (assoc ret k (populate conn v)))
+(defn populate [conn query]
+  (letfn [(step [ret k]
+            (cond
+              (map? k)
+              (let [[k v] (first k)]
+                (assoc ret k (fetch conn k v)))
 
-               (vector? v)
-               (fetch conn k v context)
+              (keyword? k)
+              (assoc ret k (fetch conn k))
 
-               :else
-               (throw
-                 (ex-info (str "Invalid query-map value " v)
-                   {:type :error/invalid-query-map-value}))))]
-     (reduce-kv step {} query-map))))
+              :else
+              (throw
+                (ex-info (str "Invalid query key " k)
+                  {:type :error/invalid-query-value}))))]
+    (reduce step {} query)))
 
 (defn query [req]
   (generate-response
@@ -132,7 +126,7 @@
   ;; get contact
   (handler {:uri "/query"
             :request-method :post
-            :transit-params {:contacts {:self [:person/first-name :person/last-name]}}
+            :transit-params [{:contacts [:person/first-name :person/last-name]}]
             :datomic-connection (:connection (:db @cc/servlet-system))})
 
   ;; create contact
