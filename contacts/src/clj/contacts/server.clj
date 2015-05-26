@@ -42,7 +42,7 @@
 
 (defmulti -fetch (fn [_ k _] k))
 
-(defmethod -fetch :contacts
+(defmethod -fetch :app/contacts
   [conn _ selector]
   (contacts conn selector))
 
