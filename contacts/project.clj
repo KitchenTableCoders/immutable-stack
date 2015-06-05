@@ -17,7 +17,7 @@
                  [cljs-http "0.1.30" :exclusions
                   [org.clojure/clojure org.clojure/clojurescript
                    com.cognitect/transit-cljs]]
-                 [cljsjs/codemirror "5.1.0-1"]
+                 [cljsjs/codemirror "5.1.0-2"]
                  [com.stuartsierra/component "0.2.1"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
 

@@ -1,20 +1,37 @@
 body {
-
+    font-size: 24px;
 }
 
 #demo1 {
+    border: 1px solid #ccc;
     display: -ms-flex;
     display: -webkit-flex;
     display: flex;
+    height: 600px;
+}
+
+textarea {
+    width: 50%;
 }
 
 #demo1 > div {
     width: 50%;
 }
 
+button {
+    font-size: 24px;
+    border: 2px solid black;
+    background-color: white;
+    border-radius: 4px;
+    margin-top: 1em;
+    margin-left: 1em;
+}
+
 #input {
 }
 
 #output {
-    border: 1px solid #ccc;
+    background-color: #efefef;
+    border-left: 1px solid #ccc;
+    height: 100%;
 }

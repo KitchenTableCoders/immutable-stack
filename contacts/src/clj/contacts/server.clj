@@ -31,8 +31,9 @@
     :headers {"Content-Type" "text/html"}))
 
 (defn codemirror-css [req]
-  (let [cm-css (slurp (io/resource "cljsjs/codemirror/production/codemirror.min.css"))]
-    (assoc (response cm-css) :headers {"Content-Type" "text/css"})))
+  (assoc
+    (resource-response "cljsjs/codemirror/production/codemirror.min.css")
+    :headers {"Content-Type" "text/css"}))
 
 (defn generate-response [data & [status]]
   {:status  (or status 200)
