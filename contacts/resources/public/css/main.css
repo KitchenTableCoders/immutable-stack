@@ -14,6 +14,11 @@ textarea {
     width: 50%;
 }
 
+.CodeMirror {
+    height: 510px;
+    border-bottom: 1px solid #ccc;
+}
+
 #demo1 > div {
     width: 50%;
 }
