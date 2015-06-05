@@ -1,7 +1,7 @@
 (ns contacts.server
   (:require [clojure.java.io :as io]
             [contacts.util :as util]
-            [ring.util.response :refer [file-response resource-response]]
+            [ring.util.response :refer [response file-response resource-response]]
             [ring.adapter.jetty :refer [run-jetty]]
             [contacts.middleware
              :refer [wrap-transit-body wrap-transit-response
@@ -32,8 +32,7 @@
 
 (defn codemirror-css [req]
   (let [cm-css (slurp (io/resource "cljsjs/codemirror/production/codemirror.min.css"))]
-    (assoc (resource-response cm-css {:root "public"})
-      :headers {"Content-Type" "text/css"})))
+    (assoc (response cm-css) :headers {"Content-Type" "text/css"})))
 
 (defn generate-response [data & [status]]
   {:status  (or status 200)
