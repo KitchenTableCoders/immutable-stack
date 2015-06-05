@@ -12,11 +12,12 @@
 (defn contacts
   ([db] (contacts db '[*]))
   ([db selector]
-   (d/q '[:find (pull ?eid selector)
-          :in $ selector
-          :where
-          [?eid :person/first-name]] ;; talk about how we can make it do first OR last name
-     db selector)))
+   (mapv first
+     (d/q '[:find (pull ?eid selector)
+            :in $ selector
+            :where
+            [?eid :person/first-name]] ;; talk about how we can make it do first OR last name
+       db selector))))
 
 (defn get-contact
   ([db id] (get-contact db id '[*]))
