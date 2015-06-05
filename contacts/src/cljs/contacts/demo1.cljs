@@ -7,8 +7,7 @@
             [cljs.core.async :refer [<! >! chan]]
             [cljs.reader :as reader]
             [cljsjs.codemirror.mode.clojure]
-            [cljsjs.codemirror.addons.matchbrackets]
-            [cljsjs.codemirror.addons.closebrackets])
+            [cljsjs.codemirror.addons.matchbrackets])
   (:import [goog.events EventType]))
 
 (defn log [x]
@@ -22,7 +21,6 @@
   (let [ed (js/CodeMirror.fromTextArea (gdom/getElement "input")
              #js {:lineNumbers true
                   :matchBrackets true
-                  :closeBrackets true
                   :mode #js {:name "clojure"}})]
     (events/listen (gdom/getElement "submit") EventType.CLICK
       (fn [e]
