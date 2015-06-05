@@ -25,7 +25,7 @@
 ;; Handlers
 
 (defn demo [n req]
-  (assoc (resource-response "html/demo" n ".html" {:root "public"})
+  (assoc (resource-response (str "html/demo" n ".html") {:root "public"})
     :headers {"Content-Type" "text/html"}))
 
 (defn generate-response [data & [status]]
