@@ -10,7 +10,7 @@
                  [org.clojure/clojurescript "0.0-3308"]
                  [com.datomic/datomic-free "0.9.5153"]
                  [bidi "1.10.2"]
-                 [org.omcljs/om "0.9.0"]
+                 [org.omcljs/om "0.9.0-SNAPSHOT"]
                  [ring/ring "1.2.2"]
                  [com.cognitect/transit-clj "0.8.271"]
                  [com.cognitect/transit-cljs "0.8.220"]
