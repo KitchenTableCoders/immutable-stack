@@ -10,11 +10,10 @@
                  [org.clojure/clojurescript "0.0-3308"]
                  [com.datomic/datomic-free "0.9.5153"]
                  [bidi "1.10.2"]
-                 [org.omcljs/om "0.9.0-SNAPSHOT"]
-                 [secretary "1.2.3"]
+                 [org.omcljs/om "0.9.0"]
                  [ring/ring "1.2.2"]
                  [com.cognitect/transit-clj "0.8.271"]
-                 [com.cognitect/transit-cljs "0.8.215"]
+                 [com.cognitect/transit-cljs "0.8.220"]
                  [cljs-http "0.1.30" :exclusions
                   [org.clojure/clojure org.clojure/clojurescript
                    com.cognitect/transit-cljs]]

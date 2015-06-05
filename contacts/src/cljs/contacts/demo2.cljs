@@ -1,7 +1,8 @@
 (ns contacts.demo2
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [goog.dom :as gdom]
-            [om.next :as om]
+            [cljs.pprint :refer [pprint]]
+            [om.next :as om :refer-macros [defui]]
             [om.dom :as dom]
             [cljs-http.client :as http]
             [cljs.core.async :refer [<! >! chan]]))
