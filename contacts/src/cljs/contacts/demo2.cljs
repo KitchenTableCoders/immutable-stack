@@ -23,7 +23,7 @@
   Object
   (render [this]
     (let [{:keys [:person/first-name :person/last-name] :as props}
-          (first (om/props this))]
+          (om/props this)]
       (dom/div nil
         (dom/div nil
           (dom/label nil "Full Name:")
