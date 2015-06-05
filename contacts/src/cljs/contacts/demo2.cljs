@@ -1,8 +1,10 @@
 (ns contacts.demo2
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [goog.dom :as gdom]
             [om.next :as om]
             [om.dom :as dom]
-            [cljs-http.client :as http]))
+            [cljs-http.client :as http]
+            [cljs.core.async :refer [<! >! chan]]))
 
 (defn log [x]
   (println) ;; flush past prompt
@@ -53,6 +55,9 @@
         (js/React.render
           (contact-list contacts)
           (gdom/getElement "contacts"))))))
+
+(when (gdom/getElement "demo2")
+  (main))
 
 (comment
   (require '[cljs.pprint :as pprint])
