@@ -1,5 +1,6 @@
 (ns contacts.server
-  (:require [contacts.util :as util]
+  (:require [clojure.java.io :as io]
+            [contacts.util :as util]
             [ring.util.response :refer [file-response resource-response]]
             [ring.adapter.jetty :refer [run-jetty]]
             [contacts.middleware
@@ -18,6 +19,7 @@
   ["" {"/" :demo1
        "/demo/1" :demo1
        "/demo/2" :demo2
+       "/css/codemirror.css" :css.codemirror
        "/query"
         {:post {[""] :query}}}])
 
@@ -27,6 +29,11 @@
 (defn demo [n req]
   (assoc (resource-response (str "html/demo" n ".html") {:root "public"})
     :headers {"Content-Type" "text/html"}))
+
+(defn codemirror-css [req]
+  (let [cm-css (slurp (io/resource "cljsjs/codemirror/production/codemirror.min.css"))]
+    (assoc (resource-response cm-css {:root "public"})
+      :headers {"Content-Type" "text/css"})))
 
 (defn generate-response [data & [status]]
   {:status  (or status 200)
@@ -79,6 +86,7 @@
                 :request-method (:request-method req))]
     ;(println match)
     (case (:handler match)
+      :css.codemirror (codemirror-css req)
       :demo1 (demo 1 req)
       :demo2 (demo 2 req)
       :query (query req)

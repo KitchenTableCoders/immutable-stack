@@ -1,63 +1,20 @@
 body {
-  margin: 0px;
-  padding: 0px;
-  width: 100%;
+
 }
 
-ul {
-  margin: 0;
-  padding: 0 0 0 10px;
+#demo1 {
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
 }
 
-li {
-  list-style: none;
-  margin: 0;
-  padding: 10px;
+#demo1 > div {
+    width: 50%;
 }
 
-label {
-  font-size: 11px;
-  font-weight: bold;
-  text-transform: uppercase;
+#input {
 }
 
-.button {
-  font-family: sans-serif;
-  padding: 5px 10px;
-  border: 1px solid #666;
-  border-radius: 4px;
-  background-color: white;
-  text-transform: uppercase;
-}
-
-#contacts {
-  font-family: sans-serif;
-  position: absolute;
-  width: 400px;
-  left: 50%;
-  margin-left: -200px;
-  margin-top: 10px;
-}
-
-#contacts-list, #contact-info {
-  border: 1px solid #ccc;
-  min-height: 50px;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-#contacts-list li {
-  cursor: pointer;
-}
-
-.section {
-  margin-top: 20px;
-}
-
-.list {
-  font-size: 13px;
-}
-
-.editable button {
-  margin-left: 10px;
+#output {
+    border: 1px solid #ccc;
 }
