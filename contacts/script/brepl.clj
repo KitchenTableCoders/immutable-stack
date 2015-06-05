@@ -5,7 +5,7 @@
 (b/build (b/inputs "src/dev")
   {:main 'contacts.dev
    :asset-path "js"
-   :output-to "resources/public/js/app.js"
+   :output-to "resources/public/js/demo.js"
    :output-dir "resources/public/js"})
 
 (repl/repl

@@ -15,16 +15,17 @@
 ;; Routes
 
 (def routes
-  ["" {"/" :index
-       "/index.html" :index
+  ["" {"/" :demo1
+       "/demo/1" :demo1
+       "/demo/2" :demo2
        "/query"
         {:post {[""] :query}}}])
 
 ;; =============================================================================
 ;; Handlers
 
-(defn index [req]
-  (assoc (resource-response "html/index.html" {:root "public"})
+(defn demo [n req]
+  (assoc (resource-response "html/demo" n ".html" {:root "public"})
     :headers {"Content-Type" "text/html"}))
 
 (defn generate-response [data & [status]]
@@ -78,7 +79,8 @@
                 :request-method (:request-method req))]
     ;(println match)
     (case (:handler match)
-      :index (index req)
+      :demo1 (demo 1 req)
+      :demo2 (demo 2 req)
       :query (query req)
       :contact-get (contact-get req (:id (:params match)))
       req)))
@@ -126,8 +128,11 @@
   ;; get contact
   (handler {:uri "/query"
             :request-method :post
-            :transit-params [{:app/contacts [:person/first-name :person/last-name]}]
+            :transit-params [{:app/contacts [:person/first-name :person/last-name
+                                             {:person/telephone '[*]}]}]
             :datomic-connection (:connection (:db @cc/servlet-system))})
+
+  (.basisT (d/db (:connection (:db @cc/servlet-system))))
 
   ;; create contact
   (handler {:uri "/contacts"
