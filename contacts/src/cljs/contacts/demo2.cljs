@@ -8,6 +8,9 @@
             [cljs-http.client :as http]
             [cljs.core.async :refer [<! >! chan]]))
 
+;; =============================================================================
+;; Utilities
+
 (defn log [x]
   (println) ;; flush past prompt
   (pprint x))
@@ -29,6 +32,9 @@
        (apply dom/label nil label-content)
        (apply dom/span nil span-content)))))
 
+;; =============================================================================
+;; AddressInfo Component
+
 (defui AddressInfo
   static om/IQuery
   (query [this]
@@ -44,6 +50,9 @@
           (str street " " city ", " state " " zipcode))))))
 
 (def address-info (om/create-factory AddressInfo))
+
+;; =============================================================================
+;; Contact Component
 
 (defui Contact
   ;static om/IQueryParams
@@ -68,6 +77,9 @@
 
 (def contact (om/create-factory Contact))
 
+;; =============================================================================
+;; ContactList Component
+
 (defui ContactList
   static om/IQueryParams
   (params [this]
@@ -84,6 +96,9 @@
           (map #(dom/li nil (contact %)) contacts))))))
 
 (def contact-list (om/create-factory ContactList))
+
+;; =============================================================================
+;; main
 
 (defn main []
   (let [c (fetch (om/get-query ContactList))]
