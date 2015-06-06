@@ -51,7 +51,7 @@
 (def contact-list (om/create-factory ContactList))
 
 (defn main []
-  (let [c (fetch (om/query ContactList))]
+  (let [c (fetch (om/get-query ContactList))]
     (go
       (let [contacts (:body (<! c))]
         (js/React.render
