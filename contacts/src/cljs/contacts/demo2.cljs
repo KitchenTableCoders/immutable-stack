@@ -26,12 +26,14 @@
     '[:address/street :address/city :address/zipcode])
   Object
   (render [this]
-    (let [{:keys [:address/street :address/city :address/zipcode]}
+    (let [{:keys [:address/street :address/city
+                  :address/state :address/zipcode]}
           (om/props this)]
       (dom/div nil
-        (dom/div nil)
-        (dom/div nil)
-        (dom/div nil)))))
+        (dom/div nil street)
+        (dom/div nil (str city ", " state " " zipcode))))))
+
+(def address-info (om/create-factory AddressInfo))
 
 (defui Contact
   static om/IQuery
