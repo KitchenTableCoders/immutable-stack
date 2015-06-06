@@ -15,10 +15,19 @@
 (defn fetch [q]
   (http/post "http://localhost:8081/query" {:transit-params q}))
 
-(defn label+span [label-text span-text]
-  (dom/div nil
-    (dom/label nil label-text)
-    (dom/span nil span-text)))
+(defn label+span
+  ([label-content span-content]
+   (label+span nil label-content span-content))
+  ([props label-content span-content]
+   (let [label-content (if-not (sequential? label-content)
+                         [label-content]
+                         label-content)
+         span-content (if-not (sequential? span-content)
+                         [span-content]
+                         span-content)]
+     (dom/div props
+       (apply dom/label nil label-content)
+       (apply dom/span nil span-content)))))
 
 (defui AddressInfo
   static om/IQuery
@@ -29,33 +38,40 @@
     (let [{:keys [:address/street :address/city
                   :address/state :address/zipcode]}
           (om/props this)]
-      (dom/div nil
-        (dom/div nil street)
-        (dom/div nil (str city ", " state " " zipcode))))))
+      (label+span #js {:className "address"}
+        "Address:"
+        (dom/span nil
+          (str street " " city ", " state " " zipcode))))))
 
 (def address-info (om/create-factory AddressInfo))
 
 (defui Contact
+  ;static om/IQueryParams
+  ;(params [this]
+  ;  {:address (om/get-query AddressInfo)})
   static om/IQuery
   (query [this]
     '[:person/first-name :person/last-name
-      {:person/telephone [:telephone/number]}])
+      {:person/telephone [:telephone/number]}
+      #_{:person/address ?address}])
   Object
   (render [this]
-    (let [{:keys [:person/first-name :person/last-name] :as props}
+    (let [{:keys [:person/first-name :person/last-name :person/address]
+           :as props}
           (om/props this)]
       (dom/div nil
         (label+span "Full Name:"
           (str last-name ", " first-name))
         (label+span "Number:"
-          (:telephone/number (first (:person/telephone props))))))))
+          (:telephone/number (first (:person/telephone props))))
+        #_(address-info (first address))))))
 
 (def contact (om/create-factory Contact))
 
 (defui ContactList
   static om/IQueryParams
   (params [this]
-    {:contact (om/query Contact)})
+    {:contact (om/get-query Contact)})
   static om/IQuery
   (query [this]
     '[{:app/contacts ?contact}])
@@ -100,7 +116,5 @@
   (main)
 
   ;; works
-  (om/bind-query
-    (om/-query ContactList)
-    (om/-params ContactList))
+  (om/get-query ContactList)
   )
