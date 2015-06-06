@@ -10,10 +10,10 @@
    :foreign-libs
    [{:provides ["cljsjs.codemirror.addons.matchbrackets"]
      :requires ["cljsjs.codemirror"]
-     :file "resources/public/codemirror/matchbrackets.js"}
+     :file "public/codemirror/matchbrackets.js"}
     {:provides ["cljsjs.codemirror.addons.closebrackets"]
      :requires ["cljsjs.codemirror"]
-     :file "resources/public/codemirror/closebrackets.js"}]})
+     :file "public/codemirror/closebrackets.js"}]})
 
 (repl/repl
   (browser/repl-env :host-port 8081)
@@ -22,7 +22,7 @@
   :foreign-libs
   [{:provides ["cljsjs.codemirror.addons.matchbrackets"]
     :requires ["cljsjs.codemirror"]
-    :file "resources/public/codemirror/matchbrackets.js"}
+    :file "public/codemirror/matchbrackets.js"}
    {:provides ["cljsjs.codemirror.addons.closebrackets"]
     :requires ["cljsjs.codemirror"]
-    :file "resources/public/codemirror/closebrackets.js"}])
+    :file "public/codemirror/closebrackets.js"}])

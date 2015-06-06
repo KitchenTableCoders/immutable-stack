@@ -29,8 +29,8 @@
             (with-out-str
               (binding [pprint/*print-right-margin* 40]
                 (pprint
-                 (:body
-                   (<! (fetch (reader/read-string (.getValue ed))))))))))))))
+                  (:body
+                    (<! (fetch (reader/read-string (.getValue ed))))))))))))))
 
 (when (gdom/getElement "demo1")
   (main))
