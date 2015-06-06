@@ -95,26 +95,3 @@
 
 (when (gdom/getElement "demo2")
   (main))
-
-(comment
-  (require '[cljs.pprint :as pprint])
-
-  (let [c (fetch [{:app/contacts [:person/first-name]}])]
-    (go (log (:body (<! c)))))
-
-  (let [c (fetch [{:app/contacts
-                   [:person/first-name
-                    :person/last-name]}])]
-    (go (log (:body (<! c)))))
-
-  (let [c (fetch [{:app/contacts
-                   [:person/first-name
-                    :person/last-name
-                    {:person/telephone [:telephone/number]}]}])]
-    (go (log (:body (<! c)))))
-
-  (main)
-
-  ;; works
-  (om/get-query ContactList)
-  )

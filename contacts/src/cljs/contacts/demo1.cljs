@@ -34,8 +34,3 @@
 
 (when (gdom/getElement "demo1")
   (main))
-
-(comment
-  (let [c (fetch [{:app/contacts [:person/first-name]}])]
-    (go (log (:body (<! c)))))
-  )
