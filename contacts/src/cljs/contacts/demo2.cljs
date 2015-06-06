@@ -15,6 +15,24 @@
 (defn fetch [q]
   (http/post "http://localhost:8081/query" {:transit-params q}))
 
+(defn label+span [label-text span-text]
+  (dom/div nil
+    (dom/label nil label-text)
+    (dom/span nil span-text)))
+
+(defui AddressInfo
+  static om/IQuery
+  (query [this]
+    '[:address/street :address/city :address/zipcode])
+  Object
+  (render [this]
+    (let [{:keys [:address/street :address/city :address/zipcode]}
+          (om/props this)]
+      (dom/div nil
+        (dom/div nil)
+        (dom/div nil)
+        (dom/div nil)))))
+
 (defui Contact
   static om/IQuery
   (query [this]
@@ -25,13 +43,10 @@
     (let [{:keys [:person/first-name :person/last-name] :as props}
           (om/props this)]
       (dom/div nil
-        (dom/div nil
-          (dom/label nil "Full Name:")
-          (dom/span nil (str last-name ", " first-name)))
-        (dom/div nil
-          (dom/label nil "Number:")
-          (dom/span nil
-            (:telephone/number (first (:person/telephone props)))))))))
+        (label+span "Full Name:"
+          (str last-name ", " first-name))
+        (label+span "Number:"
+          (:telephone/number (first (:person/telephone props))))))))
 
 (def contact (om/create-factory Contact))
 
