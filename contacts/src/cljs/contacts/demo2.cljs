@@ -56,7 +56,7 @@
       (let [contacts (:body (<! c))]
         (js/React.render
           (contact-list contacts)
-          (gdom/getElement "contacts"))))))
+          (gdom/getElement "demo2"))))))
 
 (when (gdom/getElement "demo2")
   (main))
