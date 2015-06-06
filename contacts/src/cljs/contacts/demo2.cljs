@@ -110,3 +110,8 @@
 
 (when (gdom/getElement "demo2")
   (main))
+
+(comment
+  (pprint (om/get-query ContactList))
+  (go (pprint (:body (<! (fetch (om/get-query ContactList))))))
+  )
