@@ -2,12 +2,30 @@ body {
     font-size: 24px;
 }
 
-#demo1 {
+#demo1, #demo2 {
     border: 1px solid #ccc;
     display: -ms-flex;
     display: -webkit-flex;
     display: flex;
     height: 600px;
+}
+
+#demo2 {
+    padding: 2em;
+    font-family: helvetica, arial, sans-serif;
+}
+
+#demo2 h3 {
+    margin: 0;
+}
+
+#demo2 li {
+    padding: 0 0 0.5em 0;
+}
+
+#demo2 li label {
+    font-weight: bold;
+    padding-right: 1em;
 }
 
 textarea {

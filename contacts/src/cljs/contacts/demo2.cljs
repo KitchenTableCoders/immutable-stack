@@ -45,8 +45,10 @@
   Object
   (render [this]
     (let [{:keys [:app/contacts]} (om/props this)]
-      (apply dom/ul nil
-        (map #(dom/li nil (contact %)) contacts)))))
+      (dom/div nil
+        (dom/h3 nil "Contacts")
+        (apply dom/ul nil
+          (map #(dom/li nil (contact %)) contacts))))))
 
 (def contact-list (om/create-factory ContactList))
 
