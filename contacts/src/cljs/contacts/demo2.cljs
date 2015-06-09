@@ -56,7 +56,7 @@
 ;; Contact Component
 
 (defui Contact
-  static om/IQueryParams
+  ;static om/IQueryParams
   ;(params [this]
   ;  {:address (om/get-query AddressInfo)})
   static om/IQuery
