@@ -6,7 +6,8 @@
             [om.next :as om :refer-macros [defui]]
             [om.dom :as dom]
             [cljs-http.client :as http]
-            [cljs.core.async :refer [<! >! chan]]))
+            [cljs.core.async :refer [<! >! chan]]
+            [clojure.browser.repl :as repl]))
 
 ;; =============================================================================
 ;; Utilities
@@ -55,7 +56,7 @@
 ;; Contact Component
 
 (defui Contact
-  ;static om/IQueryParams
+  static om/IQueryParams
   ;(params [this]
   ;  {:address (om/get-query AddressInfo)})
   static om/IQuery
@@ -101,6 +102,7 @@
 ;; main
 
 (defn main []
+  (defonce conn (repl/connect "http://localhost:9000/repl"))
   (let [c (fetch (om/get-query ContactList))]
     (go
       (let [contacts (:body (<! c))]
