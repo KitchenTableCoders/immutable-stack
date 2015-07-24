@@ -11,7 +11,8 @@
      :file "public/codemirror/matchbrackets.js"}
     {:provides ["cljsjs.codemirror.addons.closebrackets"]
      :requires ["cljsjs.codemirror"]
-     :file "public/codemirror/closebrackets.js"}]})
+     :file "public/codemirror/closebrackets.js"}]
+   :verbose true})
 
 (b/build (b/inputs "src/dev")
   (merge
